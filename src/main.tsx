@@ -6,10 +6,10 @@ import { WindowTitleBar } from "@/components/WindowTitleBar";
 import { SWRProvider } from "@/providers/SWRProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import HomePage from "@/app/home/page";
-import LandingPage from "@/app/page";
 import Companies from "@/app/companies/page";
 import History from "@/app/history/page";
 import Settings from "@/app/settings/page";
+import { StartupVideo } from "@/components/StartupVideo/StartupVideo";
 import "@/app/globals.scss";
 
 const rootElement = document.getElementById("root");
@@ -26,7 +26,7 @@ createRoot(rootElement).render(
         <BrowserRouter>
           <AppLayout>
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<StartupVideo />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/companies" element={<Companies />} />
               <Route path="/history" element={<History />} />

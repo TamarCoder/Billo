@@ -31,6 +31,13 @@ npm run electron:build
 Vite writes the static frontend to `out/`, which Electron loads using its
 `app://` protocol. Electron installer artifacts are written to `release/`.
 
+## GitHub Actions desktop builds
+
+Pushing to `main` runs the **Build desktop apps** workflow for macOS and
+Windows. You can also start it manually from the repository's **Actions**
+tab. When both jobs finish, download the `billo-macOS` and `billo-Windows`
+artifacts from the workflow run.
+
 ## Imports and Sass
 
 The `@/*` TypeScript path alias is configured in `tsconfig.json` and resolved
