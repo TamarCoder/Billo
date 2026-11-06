@@ -9,7 +9,7 @@
     "lint": "eslint",
     "electron:compile": "tsc -p electron/tsconfig.json",
     "electron:dev": "npm run electron:compile && concurrently -k -n vite,electron \"vite\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "npm run build && npm run electron:compile && electron-builder --publish never",
+    "electron:build": "vite build --mode production && npm run electron:compile && electron-builder --publish never",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc -p electron/tsconfig.json --noEmit"
   },
   "dependencies": {

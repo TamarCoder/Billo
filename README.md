@@ -28,8 +28,12 @@ npm run build
 npm run electron:build
 ```
 
-Vite writes the static frontend to `out/`, which Electron loads using its
-`app://` protocol. Electron installer artifacts are written to `release/`.
+Production builds use `.env.production` to connect to the deployed backend;
+local development continues to use `.env.local`. Vite writes the static
+frontend to `out/`, which Electron loads using its `app://` protocol. Electron
+installer artifacts are written to `release/`.
+The Electron build uses `.env.electron` to connect to the deployed backend;
+local development continues to use `.env.local`.
 
 ## GitHub Actions desktop builds
 
