@@ -41,8 +41,67 @@
   gap: $space-2;
 }
 
+.refreshButton {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  min-height: 52px;
+  padding: 0 $space-3;
+  border: 0;
+  border-radius: $radius-lg;
+  background: transparent;
+  color: $color-text-strong;
+  font: inherit;
+  font-size: $text-md;
+  font-weight: $weight-medium;
+  text-align: left;
+  cursor: pointer;
+  @include transition(background-color color);
+
+  &:hover:not(:disabled) {
+    background: $surface-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.75;
+  }
+}
+
+.refreshIcon {
+  flex: 0 0 auto;
+}
+
+.refreshing .refreshIcon {
+  animation: refresh-spin 0.8s linear infinite;
+}
+
+.refreshError {
+  margin: 0;
+  padding-inline: $space-3;
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
 .themeToggle {
   margin-top: auto;
+}
+
+@keyframes refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refreshing .refreshIcon {
+    animation-duration: 2s;
+  }
 }
 
 @include below("sidebar") {

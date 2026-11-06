@@ -1,4 +1,6 @@
-import { Building2, History, Home, Settings } from "lucide-react";
+import { useState } from "react";
+import { Building2, History, Home, RefreshCw, Settings } from "lucide-react";
+import { useSWRConfig } from "swr";
 import { AsideButton } from "@/ui/AsideButton/AsideButton";
 import { ThemeToggle } from "@/ui/ThemeToggle/ThemeToggle";
 import styles from "./Aside.module.scss";
@@ -11,6 +13,22 @@ const navigationItems = [
 ];
 
 export function Aside() {
+  const { mutate } = useSWRConfig();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState("");
+
+  const refreshData = async () => {
+    setIsRefreshing(true);
+    setRefreshError("");
+    try {
+      await mutate((key) => typeof key === "string");
+    } catch {
+      setRefreshError("მონაცემების განახლება ვერ მოხერხდა.");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
@@ -28,6 +46,21 @@ export function Aside() {
             className={styles.link}
           />
         ))}
+        <button
+          type="button"
+          className={`${styles.refreshButton} ${isRefreshing ? styles.refreshing : ""}`}
+          onClick={() => void refreshData()}
+          disabled={isRefreshing}
+          aria-busy={isRefreshing}
+        >
+          <RefreshCw className={styles.refreshIcon} size={20} aria-hidden="true" />
+          <span>{isRefreshing ? "მიმდინარეობს განახლება..." : "განახლება"}</span>
+        </button>
+        {refreshError && (
+          <p className={styles.refreshError} role="alert">
+            {refreshError}
+          </p>
+        )}
       </nav>
       <ThemeToggle className={styles.themeToggle} />
     </aside>
