@@ -5,19 +5,26 @@ import { Button } from "@/ui/Button/Button";
 import { Input } from "@/ui/Input/Input";
 import { Pagination } from "@/ui/Pagination/Pagination";
 import { useCompanyPageState } from "@/hooks/useCompanyPageState";
-import { useLoadCompanies } from "@/hooks/useLoadCompanies";
-import { useCompaniesStore } from "@/store/useCompaniesStore";
+import { useCompanies } from "@/hooks/api/useCompanies";
+import { useCompanyMutations } from "@/hooks/api/useCompanyMutations";
 import type { InsuranceCompany } from "@/types/invoice";
 import styles from "./page.module.scss";
 
 const ITEMS_PER_PAGE = 7;
+const NEW_COMPANY_ID = "new-company";
 
 export default function Companies() {
-  const companies = useCompaniesStore((state) => state.companies);
-  const loadCompanies = useCompaniesStore((state) => state.loadCompanies);
-  const addCompany = useCompaniesStore((state) => state.addCompany);
-  const updateCompany = useCompaniesStore((state) => state.updateCompany);
-  const removeCompany = useCompaniesStore((state) => state.deleteCompany);
+  const {
+    data: companies = [],
+    error: loadError,
+    isLoading,
+  } = useCompanies();
+  const {
+    createCompany,
+    updateCompany,
+    deleteCompany: removeCompany,
+    isMutating,
+  } = useCompanyMutations();
   const {
     storageError,
     setStorageError,
@@ -32,7 +39,6 @@ export default function Companies() {
     search,
     setSearch,
   } = useCompanyPageState();
-  useLoadCompanies({ loadCompanies, setError: setStorageError });
 
   const filteredCompanies = companies.filter((company) =>
     company.name
@@ -48,23 +54,14 @@ export default function Companies() {
     currentPage * ITEMS_PER_PAGE,
   );
 
-  const reportStorageError = (error: unknown, fallback: string) => {
-    setStorageError(error instanceof Error ? error.message : fallback);
-  };
-
   const startCreating = () => {
     if (editingId) return;
-    try {
-      const company = addCompany();
-      setSearch("");
-      setCurrentPage(Math.ceil((companies.length + 1) / ITEMS_PER_PAGE));
-      setEditingId(company.id);
-      setIsCreating(true);
-      setNameDraft("");
-      setStorageError("");
-    } catch (error) {
-      reportStorageError(error, "კომპანიის დამატება ვერ მოხერხდა. სცადეთ ხელახლა.");
-    }
+    setSearch("");
+    setCurrentPage(Math.max(1, Math.ceil((companies.length + 1) / ITEMS_PER_PAGE)));
+    setEditingId(NEW_COMPANY_ID);
+    setIsCreating(true);
+    setNameDraft("");
+    setStorageError("");
   };
 
   const startEditing = (company: InsuranceCompany) => {
@@ -73,49 +70,46 @@ export default function Companies() {
     setIsCreating(false);
   };
 
-  const saveName = (name: string, companyId: string) => {
+  const saveName = async (name: string, companyId: string) => {
     try {
-      updateCompany(companyId, name);
+      if (isCreating) {
+        await createCompany({ name });
+        setCurrentPage(
+          Math.max(1, Math.ceil((companies.length + 1) / ITEMS_PER_PAGE)),
+        );
+      } else {
+        await updateCompany(companyId, { name });
+        setCurrentPage(1);
+      }
     } catch (error) {
-      reportStorageError(error, "კომპანიის შენახვა ვერ მოხერხდა.");
+      setStorageError(
+        error instanceof Error ? error.message : "კომპანიის შენახვა ვერ მოხერხდა.",
+      );
       return;
     }
     setStorageError("");
-    setCurrentPage(1);
     setEditingId(null);
     setNameDraft("");
     setIsCreating(false);
   };
 
-  const cancelEdit = (companyId: string) => {
-    if (isCreating) {
-      try {
-        removeCompany(companyId);
-      } catch (error) {
-        reportStorageError(error, "კომპანიის წაშლა ვერ მოხერხდა.");
-        return;
-      }
-      setCurrentPage((page) =>
-        Math.min(
-          page,
-          Math.max(1, Math.ceil((companies.length - 1) / ITEMS_PER_PAGE)),
-        ),
-      );
-    }
+  const cancelEdit = () => {
     setEditingId(null);
     setNameDraft("");
     setIsCreating(false);
   };
 
-  const deleteCompany = (companyId: string) => {
+  const deleteCompany = async (companyId: string) => {
     const remainingCompanies = companies.filter(
       (company) => company.id !== companyId,
     );
     try {
-      removeCompany(companyId);
+      await removeCompany(companyId);
       setStorageError("");
     } catch (error) {
-      reportStorageError(error, "კომპანიის წაშლა ვერ მოხერხდა.");
+      setStorageError(
+        error instanceof Error ? error.message : "კომპანიის წაშლა ვერ მოხერხდა.",
+      );
       return;
     }
 
@@ -165,7 +159,7 @@ export default function Companies() {
             type="button"
             size="sm"
             leadingIcon={<Plus size={17} />}
-            disabled={editingId !== null}
+            disabled={editingId !== null || isLoading || Boolean(loadError)}
             onClick={startCreating}
           >
             სადაზღვევოს დამატება
@@ -174,12 +168,33 @@ export default function Companies() {
       </nav>
 
       <Card className={styles.listCard} padding="sm">
-        {storageError && (
+        {(storageError ||
+          (loadError instanceof Error
+            ? loadError.message
+            : loadError
+              ? "კომპანიების ჩატვირთვა ვერ მოხერხდა."
+              : "")) && (
           <p className={styles.storageError} role="alert">
-            {storageError}
+            {storageError ||
+              (loadError instanceof Error
+                ? loadError.message
+                : "კომპანიების ჩატვირთვა ვერ მოხერხდა.")}
           </p>
         )}
         <div className={styles.companyList} aria-label="სადაზღვევო კომპანიების სია">
+          {isCreating && editingId === NEW_COMPANY_ID && (
+            <article
+              className={`${styles.companyItem} ${styles.editingItem}`}
+              key={NEW_COMPANY_ID}
+            >
+              <CompanyNameForm
+                name={nameDraft}
+                onNameChange={setNameDraft}
+                onSubmit={(name) => saveName(name, NEW_COMPANY_ID)}
+                onCancel={cancelEdit}
+              />
+            </article>
+          )}
           {visibleCompanies.map((company) => {
             const isEditing = company.id === editingId;
 
@@ -193,7 +208,7 @@ export default function Companies() {
                     name={nameDraft}
                     onNameChange={setNameDraft}
                     onSubmit={(name) => saveName(name, company.id)}
-                    onCancel={() => cancelEdit(company.id)}
+                    onCancel={cancelEdit}
                   />
                 ) : (
                   <>
@@ -203,6 +218,7 @@ export default function Companies() {
                         type="button"
                         className={styles.iconButton}
                         aria-label={`${company.name} სახელის რედაქტირება`}
+                        disabled={isMutating}
                         onClick={() => startEditing(company)}
                       >
                         <Pencil size={16} />
@@ -211,7 +227,8 @@ export default function Companies() {
                         type="button"
                         className={styles.iconButton}
                         aria-label={`${company.name} წაშლა`}
-                        onClick={() => deleteCompany(company.id)}
+                        disabled={isMutating}
+                        onClick={() => void deleteCompany(company.id)}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -221,7 +238,12 @@ export default function Companies() {
               </article>
             );
           })}
-          {filteredCompanies.length === 0 && (
+          {isLoading && (
+            <p className={styles.emptyState} role="status">
+              კომპანიები იტვირთება...
+            </p>
+          )}
+          {!isLoading && !loadError && filteredCompanies.length === 0 && (
             <p className={styles.emptyState}>
               {companies.length === 0
                 ? "კომპანიები ჯერ არ არის დამატებული."

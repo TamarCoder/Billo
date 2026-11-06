@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import useSWRMutation from "swr/mutation";
 import { useSWRConfig } from "swr";
 import { API_ENDPOINTS } from "@/api/endpoints";
@@ -40,28 +41,37 @@ export function useInvoiceMutations() {
     (_key, { arg }: { arg: string }) => invoicesApi.delete(arg),
   );
 
-  const createInvoice = async (input: CreateInvoiceRequest) => {
-    const invoice = await create(input);
-    await mutate(API_ENDPOINTS.invoices);
-    return invoice;
-  };
-  const updateInvoice = async (id: string, values: UpdateInvoiceRequest) => {
-    const invoice = await update({ id, values });
-    await mutate(API_ENDPOINTS.invoices);
-    return invoice;
-  };
-  const changeInvoiceStatus = async (
-    id: string,
-    values: UpdateInvoiceStatusRequest,
-  ) => {
-    const invoice = await updateStatus({ id, values });
-    await mutate(API_ENDPOINTS.invoices);
-    return invoice;
-  };
-  const deleteInvoice = async (id: string) => {
-    await remove(id);
-    await mutate(API_ENDPOINTS.invoices);
-  };
+  const createInvoice = useCallback(
+    async (input: CreateInvoiceRequest) => {
+      const invoice = await create(input);
+      await mutate(API_ENDPOINTS.invoices);
+      return invoice;
+    },
+    [create, mutate],
+  );
+  const updateInvoice = useCallback(
+    async (id: string, values: UpdateInvoiceRequest) => {
+      const invoice = await update({ id, values });
+      await mutate(API_ENDPOINTS.invoices);
+      return invoice;
+    },
+    [mutate, update],
+  );
+  const changeInvoiceStatus = useCallback(
+    async (id: string, values: UpdateInvoiceStatusRequest) => {
+      const invoice = await updateStatus({ id, values });
+      await mutate(API_ENDPOINTS.invoices);
+      return invoice;
+    },
+    [mutate, updateStatus],
+  );
+  const deleteInvoice = useCallback(
+    async (id: string) => {
+      await remove(id);
+      await mutate(API_ENDPOINTS.invoices);
+    },
+    [mutate, remove],
+  );
 
   return {
     createInvoice,

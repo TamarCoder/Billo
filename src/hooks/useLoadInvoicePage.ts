@@ -1,13 +1,15 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
-import {
-  INVOICE_EDIT_ID_KEY,
-  readInvoiceHistory,
-  readOrganizationSettings,
-} from "@/lib/invoiceStorage";
-import type { InvoiceDraft } from "@/types/invoice";
+import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
+import type {
+  InvoiceDraft,
+  InvoiceRecord,
+  OrganizationSettings,
+} from "@/types/invoice";
 
 interface UseLoadInvoicePageOptions {
-  loadCompanies: () => void;
+  records: InvoiceRecord[];
+  settings: OrganizationSettings;
+  isReady: boolean;
   setFormResetKey: Dispatch<SetStateAction<number>>;
   setDraft: Dispatch<SetStateAction<InvoiceDraft>>;
   setRecordId: Dispatch<SetStateAction<string | null>>;
@@ -16,7 +18,9 @@ interface UseLoadInvoicePageOptions {
 }
 
 export function useLoadInvoicePage({
-  loadCompanies,
+  records,
+  settings,
+  isReady,
   setFormResetKey,
   setDraft,
   setRecordId,
@@ -24,20 +28,23 @@ export function useLoadInvoicePage({
   setError,
 }: UseLoadInvoicePageOptions) {
   useEffect(() => {
+    if (!isReady) return;
     try {
-      loadCompanies();
       const editId = window.localStorage.getItem(INVOICE_EDIT_ID_KEY);
       if (!editId) {
-        setDraft((current) => ({ ...current, ...readOrganizationSettings() }));
+        setDraft((current) => ({ ...current, ...settings }));
         setFormResetKey((key) => key + 1);
         return;
       }
-      const record = readInvoiceHistory().find((item) => item.id === editId);
+      const record = records.find((item) => item.id === editId);
       if (record) {
         setDraft(() => record.invoice);
         setFormResetKey((key) => key + 1);
         setRecordId(record.id);
         setIsSaved(true);
+        window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
+      } else {
+        setError("მოსაძებნი ინვოისი ისტორიაში ვერ მოიძებნა.");
       }
     } catch (error) {
       setError(
@@ -47,7 +54,9 @@ export function useLoadInvoicePage({
       );
     }
   }, [
-    loadCompanies,
+    isReady,
+    records,
+    settings,
     setDraft,
     setError,
     setFormResetKey,

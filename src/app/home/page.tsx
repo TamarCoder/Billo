@@ -3,14 +3,15 @@ import { InvoiceDocument } from "@/components/InvoiceDocument/InvoiceDocument";
 import { InvoiceForm } from "@/components/InvoiceForm/InvoiceForm";
 import { useInvoicePageState } from "@/hooks/useInvoicePageState";
 import { useLoadInvoicePage } from "@/hooks/useLoadInvoicePage";
+import { useCompanies } from "@/hooks/api/useCompanies";
+import { useInvoices } from "@/hooks/api/useInvoices";
+import { useOrganizationSettings } from "@/hooks/api/useOrganizationSettings";
+import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
 import {
   DEFAULT_ORGANIZATION_SETTINGS,
   INVOICE_EDIT_ID_KEY,
-  saveInvoice,
-  updateInvoiceStatus,
 } from "@/lib/invoiceStorage";
 import type { InvoiceDraft } from "@/types/invoice";
-import { useCompaniesStore } from "@/store/useCompaniesStore";
 import styles from "./page.module.scss";
 
 function formatInvoiceDate(value: string) {
@@ -51,8 +52,22 @@ function getInitialDraft(): InvoiceDraft {
 }
 
 export default function Home() {
-  const companies = useCompaniesStore((state) => state.companies);
-  const loadCompanies = useCompaniesStore((state) => state.loadCompanies);
+  const {
+    data: companies = [],
+    error: companiesLoadError,
+  } = useCompanies();
+  const {
+    data: records = [],
+    error: invoicesLoadError,
+    isLoading: invoicesLoading,
+  } = useInvoices();
+  const {
+    data: settings = DEFAULT_ORGANIZATION_SETTINGS,
+    error: settingsLoadError,
+    isLoading: settingsLoading,
+  } = useOrganizationSettings();
+  const { createInvoice, updateInvoice, changeInvoiceStatus } =
+    useInvoiceMutations();
   const [formResetKey, setFormResetKey] = useState(0);
   const {
     draft,
@@ -69,7 +84,9 @@ export default function Home() {
     setPdfSaved,
   } = useInvoicePageState(getInitialDraft);
   useLoadInvoicePage({
-    loadCompanies,
+    records,
+    settings,
+    isReady: !invoicesLoading && !settingsLoading && !invoicesLoadError && !settingsLoadError,
     setFormResetKey,
     setDraft,
     setRecordId,
@@ -88,31 +105,26 @@ export default function Home() {
     setPdfSaved(false);
   };
 
-  const saveDraft = (values: InvoiceDraft) => {
+  const saveDraft = async (values: InvoiceDraft) => {
+    setSaveError("");
     try {
       setDraft(values);
-      window.localStorage.setItem("billo-invoice-draft", JSON.stringify(values));
-      const editId = window.localStorage.getItem(INVOICE_EDIT_ID_KEY);
-      const records = saveInvoice(values, editId ?? undefined);
-      const savedRecord = editId
-        ? records.find((item) => item.id === editId)
-        : records.find(
-            (item) =>
-              item.invoice.issuerName === values.issuerName &&
-              item.invoice.reportingMonth === values.reportingMonth,
-          );
-      if (!savedRecord) {
-        throw new Error("შენახული ინვოისი ისტორიაში ვერ მოიძებნა.");
-      }
+      const savedRecord = recordId
+        ? await updateInvoice(recordId, values)
+        : await createInvoice(values);
       setRecordId(savedRecord.id);
       window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
       setIsSaved(true);
       setSaveError("");
       setPdfError("");
       setPdfSaved(false);
-    } catch {
+    } catch (error) {
       setIsSaved(false);
-      setSaveError("ინვოისის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.");
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "ინვოისის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.",
+      );
     }
   };
 
@@ -127,34 +139,43 @@ export default function Home() {
     setPdfSaved(false);
   };
 
+  const markAsPrinted = async () => {
+    if (!recordId) return;
+    await changeInvoiceStatus(recordId, { status: "printed" });
+  };
+
   const exportPdf = async () => {
     setPdfError("");
     setPdfSaved(false);
     try {
       if (!window.electron) {
         window.print();
-        if (recordId) updateInvoiceStatus(recordId, "printed");
+        await markAsPrinted();
         return;
       }
 
       const result = await window.electron.exportInvoicePdf();
       setPdfSaved(result.status === "saved");
-      if (result.status === "saved" && recordId) {
-        updateInvoiceStatus(recordId, "printed");
-      }
-    } catch {
-      setPdfError("PDF-ის ექსპორტი ვერ მოხერხდა. სცადეთ ხელახლა.");
+      if (result.status === "saved") await markAsPrinted();
+    } catch (error) {
+      setPdfError(
+        error instanceof Error
+          ? error.message
+          : "PDF-ის ექსპორტი ვერ მოხერხდა. სცადეთ ხელახლა.",
+      );
     }
   };
 
-  const printInvoice = () => {
+  const printInvoice = async () => {
     window.print();
-    if (recordId) {
-      try {
-        updateInvoiceStatus(recordId, "printed");
-      } catch {
-        setSaveError("ინვოისის სტატუსის განახლება ვერ მოხერხდა.");
-      }
+    try {
+      await markAsPrinted();
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "ინვოისის სტატუსის განახლება ვერ მოხერხდა.",
+      );
     }
   };
 
@@ -171,7 +192,21 @@ export default function Home() {
         initialValues={draft}
         companies={companies}
         isSaved={isSaved}
-        saveError={saveError}
+        saveError={
+          companiesLoadError
+            ? companiesLoadError instanceof Error
+              ? companiesLoadError.message
+              : "სადაზღვევო კომპანიების ჩატვირთვა ვერ მოხერხდა."
+            : invoicesLoadError
+              ? invoicesLoadError instanceof Error
+                ? invoicesLoadError.message
+                : "ინვოისების ჩატვირთვა ვერ მოხერხდა."
+              : settingsLoadError
+                ? settingsLoadError instanceof Error
+                  ? settingsLoadError.message
+                  : "ორგანიზაციის პარამეტრების ჩატვირთვა ვერ მოხერხდა."
+                : saveError
+        }
         pdfError={pdfError}
         pdfSaved={pdfSaved}
         onDraftChange={updateDraft}

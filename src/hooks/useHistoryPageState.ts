@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { InvoiceRecord } from "@/types/invoice";
 
 export function useHistoryPageState() {
-  const [records, setRecords] = useState<InvoiceRecord[]>([]);
   const [search, setSearch] = useState("");
   const [year, setYear] = useState("");
   const [company, setCompany] = useState("");
@@ -12,8 +11,6 @@ export function useHistoryPageState() {
   const [error, setError] = useState("");
 
   return {
-    records,
-    setRecords,
     search,
     setSearch,
     year,

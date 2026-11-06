@@ -1,13 +1,17 @@
+import { useEffect } from "react";
 import { OrganizationSettingsForm } from "@/components/OrganizationSettingsForm/OrganizationSettingsForm";
-import {
-  writeOrganizationSettings,
-} from "@/lib/invoiceStorage";
-import { useLoadOrganizationSettings } from "@/hooks/useLoadOrganizationSettings";
+import { useOrganizationSettings } from "@/hooks/api/useOrganizationSettings";
+import { useSettingsMutation } from "@/hooks/api/useSettingsMutation";
 import { useSettingsPageState } from "@/hooks/useSettingsPageState";
 import type { OrganizationSettings } from "@/types/invoice";
 import styles from "./page.module.scss";
 
 export default function Settings() {
+  const {
+    data: loadedSettings,
+    error: loadError,
+  } = useOrganizationSettings();
+  const { updateSettings } = useSettingsMutation();
   const {
     values,
     setValues,
@@ -17,23 +21,32 @@ export default function Settings() {
     isSaved,
     setIsSaved,
   } = useSettingsPageState();
-  useLoadOrganizationSettings({ setValues, setSavedValues, setError });
+  useEffect(() => {
+    if (!loadedSettings) return;
+    setValues(loadedSettings);
+    setSavedValues(loadedSettings);
+  }, [loadedSettings, setSavedValues, setValues]);
 
   const markSettingsChanged = () => {
     setIsSaved(false);
     setError("");
   };
 
-  const saveSettings = (settings: OrganizationSettings) => {
+  const saveSettings = async (settings: OrganizationSettings) => {
+    setError("");
     try {
-      writeOrganizationSettings(settings);
-      setValues(settings);
-      setSavedValues(settings);
+      const saved = await updateSettings(settings);
+      setValues(saved);
+      setSavedValues(saved);
       setIsSaved(true);
       setError("");
-    } catch {
+    } catch (saveError) {
       setIsSaved(false);
-      setError("ორგანიზაციის მონაცემების შენახვა ვერ მოხერხდა.");
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : "ორგანიზაციის მონაცემების შენახვა ვერ მოხერხდა.",
+      );
     }
   };
 
@@ -52,7 +65,14 @@ export default function Settings() {
 
       <OrganizationSettingsForm
         values={values}
-        error={error}
+        error={
+          error ||
+          (loadError instanceof Error
+            ? loadError.message
+            : loadError
+              ? "ორგანიზაციის მონაცემების ჩატვირთვა ვერ მოხერხდა."
+              : "")
+        }
         isSaved={isSaved}
         onEdit={markSettingsChanged}
         onSubmit={saveSettings}

@@ -1,20 +1,19 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
-import { updateInvoiceStatus } from "@/lib/invoiceStorage";
+import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
 import type { InvoiceRecord } from "@/types/invoice";
 
 interface UseExportHistoryPdfOptions {
   pdfRecord: InvoiceRecord | null;
   setPdfRecord: Dispatch<SetStateAction<InvoiceRecord | null>>;
-  setRecords: Dispatch<SetStateAction<InvoiceRecord[]>>;
   setError: Dispatch<SetStateAction<string>>;
 }
 
 export function useExportHistoryPdf({
   pdfRecord,
   setPdfRecord,
-  setRecords,
   setError,
 }: UseExportHistoryPdfOptions) {
+  const { changeInvoiceStatus } = useInvoiceMutations();
   useEffect(() => {
     if (!pdfRecord) return;
     const frame = requestAnimationFrame(() => {
@@ -26,15 +25,19 @@ export function useExportHistoryPdf({
           } else {
             window.print();
           }
-          setRecords(updateInvoiceStatus(pdfRecord.id, "printed"));
+          await changeInvoiceStatus(pdfRecord.id, { status: "printed" });
           setError("");
-        } catch {
-          setError("PDF-ის ექსპორტი ვერ მოხერხდა. სცადეთ ხელახლა.");
+        } catch (error) {
+          setError(
+            error instanceof Error
+              ? error.message
+              : "PDF-ის ექსპორტი ვერ მოხერხდა. სცადეთ ხელახლა.",
+          );
         } finally {
           setPdfRecord(null);
         }
       })();
     });
     return () => cancelAnimationFrame(frame);
-  }, [pdfRecord, setError, setPdfRecord, setRecords]);
+  }, [changeInvoiceStatus, pdfRecord, setError, setPdfRecord]);
 }

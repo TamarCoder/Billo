@@ -10,12 +10,10 @@ import { Pagination } from "@/ui/Pagination/Pagination";
 import { Dropdown } from "@/ui/Dropdown/Dropdown";
 import { useHistoryData } from "@/hooks/useHistoryData";
 import { useHistoryPageState } from "@/hooks/useHistoryPageState";
-import { useLoadInvoiceHistory } from "@/hooks/useLoadInvoiceHistory";
 import { useExportHistoryPdf } from "@/hooks/useExportHistoryPdf";
-import {
-  deleteInvoice,
-  INVOICE_EDIT_ID_KEY,
-} from "@/lib/invoiceStorage";
+import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
+import { useInvoices } from "@/hooks/api/useInvoices";
+import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
 import type { InvoiceRecord } from "@/types/invoice";
 import styles from "./page.module.scss";
 
@@ -37,9 +35,9 @@ function formatReportingMonth(value: string) {
 
 export default function History() {
   const navigate = useNavigate();
+  const { data: records = [], error: loadError } = useInvoices();
+  const { deleteInvoice: removeInvoice } = useInvoiceMutations();
   const {
-    records,
-    setRecords,
     search,
     setSearch,
     year,
@@ -55,8 +53,7 @@ export default function History() {
     error,
     setError,
   } = useHistoryPageState();
-  useLoadInvoiceHistory({ setRecords, setError });
-  useExportHistoryPdf({ pdfRecord, setPdfRecord, setRecords, setError });
+  useExportHistoryPdf({ pdfRecord, setPdfRecord, setError });
 
   const { years, companies, filteredRecords, totalPages, visibleRecords } =
     useHistoryData({
@@ -69,13 +66,12 @@ export default function History() {
       itemsPerPage: ITEMS_PER_PAGE,
     });
 
-  const removeRecord = (record: InvoiceRecord) => {
+  const removeRecord = async (record: InvoiceRecord) => {
     if (!window.confirm(`წაიშალოს ინვოისი № ${record.invoice.invoiceNumber}?`)) {
       return;
     }
     try {
-      const updated = deleteInvoice(record.id);
-      setRecords(updated);
+      await removeInvoice(record.id);
       setCurrentPage((page) =>
         Math.min(
           page,
@@ -83,8 +79,12 @@ export default function History() {
         ),
       );
       setError("");
-    } catch {
-      setError("ინვოისის წაშლა ვერ მოხერხდა.");
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "ინვოისის წაშლა ვერ მოხერხდა.",
+      );
     }
   };
 
@@ -191,9 +191,17 @@ export default function History() {
           </span>
         </div>
 
-        {error && (
+        {(error ||
+          (loadError instanceof Error
+            ? loadError.message
+            : loadError
+              ? "ინვოისების ჩატვირთვა ვერ მოხერხდა."
+              : "")) && (
           <p className={styles.error} role="alert">
-            {error}
+            {error ||
+              (loadError instanceof Error
+                ? loadError.message
+                : "ინვოისების ჩატვირთვა ვერ მოხერხდა.")}
           </p>
         )}
 
