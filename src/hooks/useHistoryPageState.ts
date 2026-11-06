@@ -4,6 +4,7 @@ import type { InvoiceRecord } from "@/types/invoice";
 export function useHistoryPageState() {
   const [search, setSearch] = useState("");
   const [year, setYear] = useState("");
+  const [date, setDate] = useState("");
   const [company, setCompany] = useState("");
   const [status, setStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +16,8 @@ export function useHistoryPageState() {
     setSearch,
     year,
     setYear,
+    date,
+    setDate,
     company,
     setCompany,
     status,

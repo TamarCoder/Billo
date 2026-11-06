@@ -1,10 +1,12 @@
 import { useMemo } from "react";
-import type { InvoiceRecord } from "@/types/invoice";
+import type { InsuranceCompany, InvoiceRecord } from "@/types/invoice";
 
 interface UseHistoryDataOptions {
   records: InvoiceRecord[];
+  registeredCompanies: InsuranceCompany[];
   search: string;
   year: string;
+  date: string;
   company: string;
   status: string;
   currentPage: number;
@@ -13,8 +15,10 @@ interface UseHistoryDataOptions {
 
 export function useHistoryData({
   records,
+  registeredCompanies,
   search,
   year,
+  date,
   company,
   status,
   currentPage,
@@ -35,10 +39,13 @@ export function useHistoryData({
     () =>
       [
         ...new Set(
-          records.map((record) => record.invoice.issuerName).filter(Boolean),
+          [
+            ...registeredCompanies.map((company) => company.name),
+            ...records.map((record) => record.invoice.issuerName),
+          ].filter(Boolean),
         ),
       ].sort((left, right) => left.localeCompare(right, "ka-GE")),
-    [records],
+    [records, registeredCompanies],
   );
   const filteredRecords = useMemo(() => {
     const query = search.trim().toLocaleLowerCase("ka-GE");
@@ -49,11 +56,12 @@ export function useHistoryData({
           invoice.invoiceNumber.toLocaleLowerCase("ka-GE").includes(query) ||
           invoice.issuerName.toLocaleLowerCase("ka-GE").includes(query)) &&
         (!year || invoice.reportingMonth.startsWith(year)) &&
+        (!date || invoice.sendingDate === date) &&
         (!company || invoice.issuerName === company) &&
         (!status || record.status === status)
       );
     });
-  }, [company, records, search, status, year]);
+  }, [company, date, records, search, status, year]);
   const totalPages = Math.max(
     1,
     Math.ceil(filteredRecords.length / itemsPerPage),

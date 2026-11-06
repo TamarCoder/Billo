@@ -1,6 +1,7 @@
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/Card/Card";
+import { DatePicker } from "@/components/DatePicker/DatePicker";
 import { InvoiceDocument } from "@/components/InvoiceDocument/InvoiceDocument";
 import { InvoiceHistoryTable } from "@/components/InvoiceHistoryTable/InvoiceHistoryTable";
 import { INVOICE_STATUS_OPTIONS } from "@/components/InvoiceHistoryTable/invoiceStatus";
@@ -13,6 +14,7 @@ import { useHistoryPageState } from "@/hooks/useHistoryPageState";
 import { useExportHistoryPdf } from "@/hooks/useExportHistoryPdf";
 import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
 import { useInvoices } from "@/hooks/api/useInvoices";
+import { useCompanies } from "@/hooks/api/useCompanies";
 import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
 import type { InvoiceRecord } from "@/types/invoice";
 import styles from "./page.module.scss";
@@ -36,12 +38,18 @@ function formatReportingMonth(value: string) {
 export default function History() {
   const navigate = useNavigate();
   const { data: records = [], error: loadError } = useInvoices();
+  const {
+    data: registeredCompanies = [],
+    error: companiesLoadError,
+  } = useCompanies();
   const { deleteInvoice: removeInvoice } = useInvoiceMutations();
   const {
     search,
     setSearch,
     year,
     setYear,
+    date,
+    setDate,
     company,
     setCompany,
     status,
@@ -58,8 +66,10 @@ export default function History() {
   const { years, companies, filteredRecords, totalPages, visibleRecords } =
     useHistoryData({
       records,
+      registeredCompanies,
       search,
       year,
+      date,
       company,
       status,
       currentPage,
@@ -149,6 +159,36 @@ export default function History() {
               }}
             />
           </div>
+          <div className={`${styles.filter} ${styles.dateFilter}`}>
+            <label htmlFor="history-date-filter">თარიღი</label>
+            <div className={styles.dateFilterControl}>
+              <DatePicker
+                id="history-date-filter"
+                className={styles.filterDatePicker}
+                value={date}
+                displayFormat="numeric"
+                placeholder="ყველა თარიღი"
+                aria-label="გაგზავნის თარიღით გაფილტვრა"
+                onChange={(value) => {
+                  setDate(value);
+                  setCurrentPage(1);
+                }}
+              />
+              {date && (
+                <button
+                  type="button"
+                  className={styles.clearDateButton}
+                  aria-label="თარიღის ფილტრის გასუფთავება"
+                  onClick={() => {
+                    setDate("");
+                    setCurrentPage(1);
+                  }}
+                >
+                  <X size={15} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </div>
           <div className={`${styles.filter} ${styles.companyFilter}`}>
             <span>სადაზღვევო</span>
             <Dropdown
@@ -196,12 +236,20 @@ export default function History() {
             ? loadError.message
             : loadError
               ? "ინვოისების ჩატვირთვა ვერ მოხერხდა."
-              : "")) && (
+              : companiesLoadError instanceof Error
+                ? companiesLoadError.message
+                : companiesLoadError
+                  ? "სადაზღვევო კომპანიების ჩატვირთვა ვერ მოხერხდა."
+                  : "")) && (
           <p className={styles.error} role="alert">
             {error ||
               (loadError instanceof Error
                 ? loadError.message
-                : "ინვოისების ჩატვირთვა ვერ მოხერხდა.")}
+                : loadError
+                  ? "ინვოისების ჩატვირთვა ვერ მოხერხდა."
+                  : companiesLoadError instanceof Error
+                    ? companiesLoadError.message
+                    : "სადაზღვევო კომპანიების ჩატვირთვა ვერ მოხერხდა.")}
           </p>
         )}
 
