@@ -1,0 +1,92 @@
+@use "abstracts/colors" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+@use "abstracts/z-index" as *;
+
+html,
+body {
+  min-height: 100dvh;
+  background: $bg-mesh;
+  background-attachment: fixed;
+  font-family: $font-sans;
+  color: $color-text;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+body {
+  min-width: 320px;
+}
+
+h1,
+h2,
+h3 {
+  color: $color-text-strong;
+  font-weight: $weight-bold;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
+}
+
+h1 {
+  font-size: $text-3xl;
+}
+
+h2 {
+  font-size: $text-2xl;
+}
+
+h3 {
+  font-size: $text-xl;
+}
+
+a {
+  color: $color-link;
+}
+
+:focus-visible {
+  outline: 2px solid $color-focus-ring;
+  outline-offset: 2px;
+}
+
+body:has(.window-titlebar) {
+  padding-top: 40px;
+}
+
+.window-titlebar {
+  position: fixed;
+  z-index: $z-toast;
+  inset: 0 0 auto;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: #252525;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.window-titlebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.window-titlebar__brand img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

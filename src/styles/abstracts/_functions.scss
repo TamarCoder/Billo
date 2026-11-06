@@ -1,0 +1,10 @@
+@use "sass:map";
+@use "layout" as layout;
+
+@function breakpoint($name) {
+  @if not map.has-key(layout.$breakpoints, $name) {
+    @error "Unknown breakpoint '#{$name}'. Available breakpoints: #{map.keys(layout.$breakpoints)}";
+  }
+
+  @return map.get(layout.$breakpoints, $name);
+}

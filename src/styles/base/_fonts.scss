@@ -1,0 +1,5 @@
+@use "abstracts/typography" as *;
+
+html {
+  font-family: $font-sans;
+}

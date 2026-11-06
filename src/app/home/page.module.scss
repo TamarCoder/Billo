@@ -1,0 +1,23 @@
+@use "abstracts/colors" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/typography" as *;
+
+.page {
+  display: grid;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  color: $color-text-muted;
+  font-size: $text-sm;
+}
+
+.invoicePreview {
+  min-width: 0;
+  margin-top: $space-4;
+}

@@ -1,0 +1,96 @@
+@use "sass:list";
+@use "colors" as colors;
+@use "functions" as functions;
+@use "layout" as layout;
+@use "motion" as motion;
+@use "palette" as palette;
+@use "radius" as radius;
+@use "shadows" as shadows;
+@use "spacing" as spacing;
+@use "surfaces" as surfaces;
+
+@mixin below($name) {
+  @media (max-width: functions.breakpoint($name)) {
+    @content;
+  }
+}
+
+@mixin transition(
+  $props,
+  $duration: motion.$duration-fast,
+  $easing: motion.$ease-out
+) {
+  $transitions: ();
+
+  @each $prop in $props {
+    $transitions: list.append(
+      $transitions,
+      #{$prop} #{$duration} #{$easing},
+      comma
+    );
+  }
+
+  transition: $transitions;
+}
+
+@mixin glass-blur {
+  -webkit-backdrop-filter: surfaces.$glass-blur;
+  backdrop-filter: surfaces.$glass-blur;
+}
+
+@mixin glass($background: surfaces.$surface-glass) {
+  background: $background;
+  border: 1px solid surfaces.$glass-border-color;
+  @include glass-blur;
+}
+
+@mixin control-surface {
+  background: surfaces.$surface-input;
+  border: 1px solid colors.$color-border;
+  border-radius: radius.$radius-md;
+  box-shadow: shadows.$shadow-inset;
+}
+
+@mixin control-focus {
+  border-color: colors.$color-focus-ring;
+  box-shadow: shadows.$shadow-focus;
+}
+
+@mixin tinted($background, $border, $color) {
+  background: $background;
+  border: 1px solid $border;
+  color: $color;
+}
+
+@mixin button-reset {
+  appearance: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+@mixin center($display: grid) {
+  display: $display;
+  place-items: center;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

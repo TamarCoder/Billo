@@ -1,0 +1,185 @@
+:root {
+  color-scheme: dark;
+
+  --indigo-50: rgba(165, 171, 252, 0.12);
+  --indigo-100: rgba(165, 171, 252, 0.2);
+  --indigo-200: rgba(165, 171, 252, 0.35);
+  --indigo-300: rgb(129, 140, 248);
+  --indigo-500: rgb(91, 91, 240);
+  --indigo-600: rgb(79, 70, 229);
+  --indigo-700: rgb(199, 203, 254);
+  --navy-800: rgb(39, 36, 99);
+  --navy-900: rgb(30, 27, 75);
+  --teal-400: rgb(45, 212, 191);
+  --teal-500: rgb(20, 184, 166);
+  --cyan-700: rgb(14, 116, 144);
+  --cyan-800: rgb(21, 94, 117);
+  --white: rgb(255, 255, 255);
+  --gray-50: rgb(248, 250, 252);
+  --gray-100: rgb(241, 245, 249);
+  --gray-200: rgb(226, 232, 240);
+  --gray-300: rgb(203, 213, 225);
+  --gray-400: rgb(148, 163, 184);
+  --gray-500: rgb(100, 116, 139);
+  --gray-600: rgb(71, 85, 105);
+  --gray-700: rgb(51, 65, 85);
+  --green-50: rgba(74, 222, 128, 0.14);
+  --green-600: rgb(74, 222, 128);
+  --green-700: rgb(21, 128, 61);
+  --amber-50: rgba(251, 191, 36, 0.14);
+  --amber-200: rgba(251, 191, 36, 0.35);
+  --amber-600: rgb(251, 191, 36);
+  --amber-700: rgb(252, 211, 77);
+  --red-50: rgba(248, 113, 113, 0.14);
+  --red-200: rgba(248, 113, 113, 0.35);
+  --red-600: rgb(248, 113, 113);
+  --red-700: rgb(252, 165, 165);
+  --badge-sent: rgb(21, 128, 61);
+  --badge-printed: rgb(67, 56, 202);
+  --badge-draft: rgb(180, 83, 9);
+  --badge-none: rgb(71, 85, 105);
+  --mesh-sky: rgb(30, 58, 110);
+  --mesh-lavender: rgb(55, 45, 120);
+  --mesh-peach: rgb(100, 45, 60);
+  --mesh-mint: rgb(16, 78, 70);
+  --mesh-butter: rgb(90, 70, 25);
+  --mesh-lilac: rgb(70, 40, 105);
+  --color-text-strong: rgb(241, 240, 255);
+  --color-text: rgb(214, 212, 240);
+  --color-text-muted: rgb(160, 166, 196);
+  --color-text-subtle: rgb(130, 136, 168);
+  --color-text-inverse: rgb(255, 255, 255);
+  --color-link: rgb(165, 171, 252);
+  --color-primary: rgb(91, 91, 240);
+  --color-primary-hover: rgb(79, 70, 229);
+  --color-secondary: rgb(67, 56, 202);
+  --color-secondary-hover: rgb(79, 70, 229);
+  --color-accent: rgb(14, 116, 144);
+  --color-accent-hover: rgb(21, 94, 117);
+  --color-danger: rgb(248, 113, 113);
+  --color-danger-hover: rgb(252, 165, 165);
+  --color-success: rgb(74, 222, 128);
+  --color-warning: rgb(251, 191, 36);
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.36);
+  --color-focus-ring: rgb(129, 140, 248);
+  --surface-page: rgb(15, 14, 36);
+  --surface-glass: rgba(30, 27, 75, 0.55);
+  --surface-glass-strong: rgba(30, 27, 75, 0.78);
+  --surface-sidebar: rgba(20, 18, 50, 0.6);
+  --surface-dropzone: rgba(30, 27, 75, 0.4);
+  --surface-input: rgba(15, 14, 36, 0.7);
+  --surface-hover: rgba(165, 171, 252, 0.1);
+  --surface-selected: rgba(165, 171, 252, 0.18);
+  --surface-paper: rgb(30, 28, 66);
+  --glass-border-color: rgba(255, 255, 255, 0.1);
+  --icon-button-hover: rgba(255, 255, 255, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 22px 56px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 8px 20px rgba(91, 91, 240, 0.35);
+  --shadow-focus: 0 0 0 3px var(--color-focus-ring);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --bg-mesh:
+    radial-gradient(55% 60% at 0% 0%, var(--mesh-sky) 0%, transparent 62%),
+    radial-gradient(45% 50% at 48% 0%, var(--mesh-lavender) 0%, transparent 66%),
+    radial-gradient(50% 60% at 82% 38%, var(--mesh-peach) 0%, transparent 64%),
+    radial-gradient(42% 50% at 100% 100%, var(--mesh-mint) 0%, transparent 62%),
+    radial-gradient(36% 42% at 72% 100%, var(--mesh-butter) 0%, transparent 60%),
+    radial-gradient(48% 55% at 0% 100%, var(--mesh-lilac) 0%, transparent 62%),
+    var(--surface-page);
+  --brand-gradient: linear-gradient(135deg, var(--indigo-600) 0%, var(--teal-500) 100%);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --indigo-50: #eef0ff;
+  --indigo-100: #e0e3ff;
+  --indigo-200: #c7cbfe;
+  --indigo-300: #a5abfc;
+  --indigo-500: #5b5bf0;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --navy-800: #272463;
+  --navy-900: #1e1b4b;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --cyan-700: #0e7490;
+  --cyan-800: #155e75;
+  --white: #ffffff;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --green-50: #ecfdf3;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --amber-50: #fff7e6;
+  --amber-200: #fde3a7;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --red-50: #fef2f2;
+  --red-200: #fecaca;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --badge-sent: #15803d;
+  --badge-printed: #4338ca;
+  --badge-draft: #b45309;
+  --badge-none: #475569;
+  --mesh-sky: rgb(169, 220, 255);
+  --mesh-lavender: rgb(203, 196, 255);
+  --mesh-peach: rgb(255, 201, 182);
+  --mesh-mint: rgb(194, 245, 228);
+  --mesh-butter: rgb(255, 241, 179);
+  --mesh-lilac: rgb(231, 214, 255);
+  --color-text-strong: #1e1b4b;
+  --color-text: #24224f;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
+  --color-text-inverse: #ffffff;
+  --color-link: #4f46e5;
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-secondary: #1e1b4b;
+  --color-secondary-hover: #272463;
+  --color-accent: #0e7490;
+  --color-accent-hover: #155e75;
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-border: rgba(30, 27, 75, 0.1);
+  --color-border-strong: rgba(30, 27, 75, 0.2);
+  --color-focus-ring: rgba(79, 70, 229, 0.45);
+  --surface-page: #f4f1ff;
+  --surface-glass: rgba(255, 255, 255, 0.56);
+  --surface-glass-strong: rgba(255, 255, 255, 0.78);
+  --surface-sidebar: rgba(255, 255, 255, 0.42);
+  --surface-dropzone: rgba(255, 255, 255, 0.35);
+  --surface-input: rgba(255, 255, 255, 0.86);
+  --surface-hover: rgba(79, 70, 229, 0.06);
+  --surface-selected: rgba(79, 70, 229, 0.12);
+  --surface-paper: #ffffff;
+  --glass-border-color: rgba(255, 255, 255, 0.78);
+  --icon-button-hover: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(30, 27, 75, 0.06);
+  --shadow-md: 0 6px 18px rgba(30, 27, 75, 0.08);
+  --shadow-lg: 0 22px 56px rgba(30, 27, 75, 0.14);
+  --shadow-primary: 0 8px 20px rgba(79, 70, 229, 0.3);
+  --shadow-focus: 0 0 0 3px var(--color-focus-ring);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --bg-mesh:
+    radial-gradient(55% 60% at 0% 0%, var(--mesh-sky) 0%, transparent 62%),
+    radial-gradient(45% 50% at 48% 0%, var(--mesh-lavender) 0%, transparent 66%),
+    radial-gradient(50% 60% at 82% 38%, var(--mesh-peach) 0%, transparent 64%),
+    radial-gradient(42% 50% at 100% 100%, var(--mesh-mint) 0%, transparent 62%),
+    radial-gradient(36% 42% at 72% 100%, var(--mesh-butter) 0%, transparent 60%),
+    radial-gradient(48% 55% at 0% 100%, var(--mesh-lilac) 0%, transparent 62%),
+    var(--surface-page);
+  --brand-gradient: linear-gradient(135deg, var(--indigo-600) 0%, var(--teal-500) 100%);
+}

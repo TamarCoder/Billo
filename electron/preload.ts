@@ -5,6 +5,8 @@ import { contextBridge, ipcRenderer } from "electron";
 const api = {
   platform: process.platform,
   getVersion: (): Promise<string> => ipcRenderer.invoke("app:get-version"),
+  exportInvoicePdf: (): Promise<{ status: "saved" | "canceled" }> =>
+    ipcRenderer.invoke("invoice:export-pdf"),
 };
 
 contextBridge.exposeInMainWorld("electron", api);

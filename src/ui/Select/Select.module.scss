@@ -1,0 +1,111 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+
+  &:focus-within .chevron {
+    color: $color-primary;
+  }
+}
+
+.select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  appearance: none;
+  padding-right: $space-10;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-input;
+  box-shadow: var(--shadow-inset);
+  color: $color-text-strong;
+  font: inherit;
+  cursor: pointer;
+  @include transition(border-color box-shadow background-color);
+
+  &:hover:not(:disabled):not(:focus-visible) {
+    border-color: $color-border-strong;
+  }
+
+  &:focus-visible {
+    @include control-focus;
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+  }
+
+  option {
+    background: $surface-paper;
+    color: $color-text-strong;
+  }
+}
+
+.sm {
+  min-height: 36px;
+  padding-left: $space-3;
+  font-size: $text-sm;
+}
+
+.md {
+  min-height: 44px;
+  padding-left: $space-4;
+  font-size: $text-md;
+}
+
+.lg {
+  min-height: 56px;
+  padding-left: $space-4;
+  font-size: $text-lg;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: $space-3;
+  color: $color-text-muted;
+  pointer-events: none;
+  transform: translateY(-50%);
+  @include transition(color transform);
+}
+
+.default {
+  border-color: $color-border;
+}
+
+.success {
+  border-color: color-mix(in srgb, $color-success 55%, transparent);
+
+  &:focus-visible {
+    border-color: $color-success;
+    box-shadow: 0 0 0 3px color-mix(in srgb, $color-success 30%, transparent);
+  }
+}
+
+.warning {
+  border-color: color-mix(in srgb, $color-warning 60%, transparent);
+
+  &:focus-visible {
+    border-color: $color-warning;
+    box-shadow: 0 0 0 3px color-mix(in srgb, $color-warning 30%, transparent);
+  }
+}
+
+.error {
+  border-color: color-mix(in srgb, $color-danger 65%, transparent);
+
+  &:focus-visible {
+    border-color: $color-danger;
+    box-shadow: 0 0 0 3px color-mix(in srgb, $color-danger 30%, transparent);
+  }
+}

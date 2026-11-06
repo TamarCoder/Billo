@@ -1,0 +1,89 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/shadows" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  color: $color-text;
+}
+
+.glass {
+  @include glass($surface-glass);
+}
+
+.solid {
+  background: $surface-paper;
+}
+
+.elevated {
+  background: $surface-glass-strong;
+  box-shadow: var(--shadow-md);
+  @include glass-blur;
+}
+
+.padding-sm {
+  padding: $space-3;
+}
+
+.padding-md {
+  padding: $space-5;
+}
+
+.padding-lg {
+  padding: $space-6;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.headingGroup {
+  display: grid;
+  gap: $space-1;
+  min-width: 0;
+}
+
+.heading {
+  color: $color-text-strong;
+  font-size: $text-lg;
+  font-weight: $weight-semibold;
+  line-height: $leading-snug;
+}
+
+.description {
+  color: $color-text-muted;
+  font-size: $text-sm;
+  line-height: $leading-normal;
+}
+
+.actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: $space-2;
+}
+
+.body {
+  min-width: 0;
+  margin-top: $space-4;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-2;
+  margin-top: $space-4;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+}

@@ -1,0 +1,173 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/shadows" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.page {
+  display: grid;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  color: $color-text-muted;
+  font-size: $text-sm;
+
+  [aria-current="page"] {
+    color: $color-text-strong;
+  }
+}
+
+.breadcrumbPath,
+.pageActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.pageActions {
+  --company-action-height: 36px;
+
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.searchField {
+  position: relative;
+  width: min(230px, 30vw);
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: $space-3;
+  z-index: 1;
+  color: $color-text-muted;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.searchInput,
+.addCompanyButton {
+  box-sizing: border-box;
+  height: var(--company-action-height);
+  min-height: var(--company-action-height);
+}
+
+.searchInput {
+  padding-left: $space-8;
+}
+
+.listCard {
+  width: 100%;
+  min-width: 0;
+}
+
+.companyList {
+  display: grid;
+  gap: $space-3;
+  padding: 1px $space-1 1px 1px;
+}
+
+.pagination {
+  margin-top: $space-4;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+}
+
+.companyItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: $space-3;
+  min-height: 64px;
+  padding: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $surface-glass;
+  box-shadow: var(--shadow-sm);
+  @include transition(border-color background-color);
+}
+
+.editingItem {
+  border-color: $color-focus-ring;
+  background: $surface-selected;
+}
+
+.companyName {
+  overflow: hidden;
+  color: $color-text-strong;
+  font-size: $text-md;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemActions,
+.iconButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-paper;
+  color: $color-text-strong;
+  cursor: pointer;
+  @include transition(background-color color border-color);
+
+  &:hover {
+    border-color: $color-border-strong;
+    background: $surface-hover;
+    color: $color-primary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.emptyState {
+  margin: 0;
+  padding: $space-5;
+  color: $color-text-muted;
+  text-align: center;
+}
+
+.storageError {
+  margin: 0 0 $space-3;
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
+@media (max-width: 560px) {
+  .breadcrumb {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pageActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .searchField {
+    width: 100%;
+  }
+
+  .companyItem {
+    gap: $space-2;
+    padding: $space-2;
+  }
+}

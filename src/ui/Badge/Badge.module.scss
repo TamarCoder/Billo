@@ -1,0 +1,88 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/palette" as palette;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  border: 1px solid transparent;
+  border-radius: $radius-pill;
+  font-weight: $weight-semibold;
+  line-height: $leading-none;
+  white-space: nowrap;
+}
+
+.sm {
+  min-height: 22px;
+  padding: 0 $space-2;
+  font-size: $text-xs;
+}
+
+.md {
+  min-height: 28px;
+  padding: 0 $space-3;
+  font-size: $text-sm;
+}
+
+.neutral {
+  border-color: $color-border;
+  background: $surface-hover;
+  color: $color-text-muted;
+}
+
+.success {
+  border-color: color-mix(in srgb, $color-success 26%, transparent);
+  background: color-mix(in srgb, $color-success 14%, transparent);
+  color: $color-success;
+}
+
+.warning {
+  border-color: color-mix(in srgb, $color-warning 30%, transparent);
+  background: color-mix(in srgb, $color-warning 14%, transparent);
+  color: $color-warning;
+}
+
+.danger {
+  border-color: color-mix(in srgb, $color-danger 30%, transparent);
+  background: color-mix(in srgb, $color-danger 14%, transparent);
+  color: $color-danger;
+}
+
+.info {
+  border-color: color-mix(in srgb, $color-accent 30%, transparent);
+  background: color-mix(in srgb, $color-accent 14%, transparent);
+  color: $color-accent;
+}
+
+.sent {
+  background: palette.$badge-sent;
+  color: palette.$white;
+}
+
+.printed {
+  background: palette.$badge-printed;
+  color: palette.$white;
+}
+
+.draft {
+  background: palette.$badge-draft;
+  color: palette.$white;
+}
+
+.none {
+  background: palette.$badge-none;
+  color: palette.$white;
+}
+
+.dot {
+  width: 0.5em;
+  height: 0.5em;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+}

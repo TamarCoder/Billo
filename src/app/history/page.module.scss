@@ -1,0 +1,174 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/shadows" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.page {
+  display: grid;
+  gap: $space-4;
+  width: 100%;
+  min-width: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  color: $color-text-muted;
+  font-size: $text-sm;
+
+  [aria-current="page"] {
+    color: $color-text-strong;
+  }
+}
+
+.breadcrumbPath {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.pageActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.searchField {
+  position: relative;
+  width: min(340px, 36vw);
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: $space-3;
+  z-index: 1;
+  color: $color-text-muted;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.searchInput {
+  height: 36px;
+  min-height: 36px;
+  padding-left: $space-8;
+}
+
+.historyCard {
+  width: 100%;
+  min-width: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $color-border;
+}
+
+.filter {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: $space-1;
+  min-width: 0;
+  padding: 0;
+  color: $color-text-muted;
+  font-size: $text-sm;
+
+  > span {
+    padding-left: $space-1;
+    color: $color-text-muted;
+    font-size: $text-xs;
+    white-space: nowrap;
+  }
+}
+
+.yearFilter {
+  width: 170px;
+}
+
+.companyFilter {
+  width: 230px;
+}
+
+.statusFilter {
+  width: 185px;
+}
+
+.filterSelect {
+  width: 100%;
+  min-width: 0;
+}
+
+.filterSummary {
+  margin-left: auto;
+  padding: 0 $space-2 $space-2;
+  color: $color-text-muted;
+  font-size: $text-sm;
+  white-space: nowrap;
+}
+
+.error {
+  margin: $space-3 0 0;
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
+.pagination {
+  margin-top: $space-3;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+}
+
+.printDocument {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .breadcrumb {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .searchField {
+    width: min(100%, 400px);
+  }
+
+  .pageActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filter {
+    width: 100%;
+    grid-template-rows: auto auto;
+  }
+
+  .filterSummary {
+    margin-left: 0;
+    padding-top: $space-2;
+    text-align: right;
+  }
+}
+
+@media print {
+  .printDocument {
+    display: block;
+  }
+}

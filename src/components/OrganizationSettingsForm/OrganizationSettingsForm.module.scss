@@ -1,0 +1,92 @@
+@use "abstracts/colors" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/typography" as *;
+
+.settingsCard {
+  min-width: 0;
+}
+
+.form {
+  display: grid;
+  gap: $space-4;
+}
+
+.formSection {
+  display: grid;
+  gap: $space-3;
+  min-width: 0;
+  margin: 0;
+  padding: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+}
+
+.formSection legend {
+  padding-inline: $space-2;
+  color: $color-text-strong;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+}
+
+.field {
+  display: grid;
+  gap: $space-1;
+  min-width: 0;
+}
+
+.field label {
+  color: $color-text-strong;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+}
+
+.fieldError {
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  align-items: start;
+  min-width: 0;
+}
+
+.bankGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 0.7fr) minmax(0, 1.6fr);
+  gap: $space-3;
+  align-items: start;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-2;
+}
+
+.error,
+.success {
+  margin: 0;
+  font-size: $text-sm;
+}
+
+.error {
+  color: $color-danger;
+}
+
+.success {
+  color: $color-success;
+}
+
+@media (max-width: 560px) {
+  .fieldGrid,
+  .bankGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,66 @@
+@use "abstracts/layout" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/colors" as *;
+@use "abstracts/typography" as *;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  width: $sidebar-width;
+  min-width: 0;
+  padding: $space-5 $space-2;
+  border-radius: $radius-lg;
+  @include glass($surface-sidebar);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2;
+  color: $color-text-strong;
+  font-size: $text-lg;
+  font-weight: $weight-bold;
+  letter-spacing: $tracking-tighter;
+}
+
+.brand img {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-sm;
+  object-fit: contain;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.themeToggle {
+  margin-top: auto;
+}
+
+@include below("sidebar") {
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: $space-3 $space-2;
+  }
+
+  .navigation {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  .themeToggle {
+    margin-top: 0;
+  }
+}

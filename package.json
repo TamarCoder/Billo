@@ -3,19 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "lint": "eslint",
     "electron:compile": "tsc -p electron/tsconfig.json",
-    "electron:dev": "npm run electron:compile && concurrently -k -n next,electron \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "next build && npm run electron:compile && electron-builder",
-    "typecheck": "tsc --noEmit && tsc -p electron/tsconfig.json --noEmit"
+    "electron:dev": "npm run electron:compile && concurrently -k -n vite,electron \"vite\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "npm run build && npm run electron:compile && electron-builder",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc -p electron/tsconfig.json --noEmit"
   },
   "dependencies": {
-    "next": "16.4.5",
+    "lucide-react": "^1.70.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-hook-form": "^7.91.0",
+    "react-router-dom": "^7.18.5",
     "swr": "^2.5.1",
     "zustand": "^5.0.16"
   },
@@ -23,13 +25,15 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.2.1",
     "concurrently": "^10.0.6",
     "electron": "^45.2.3",
     "electron-builder": "^26.18.0",
     "eslint": "^9",
-    "eslint-config-next": "16.4.5",
     "sass": "^1.108.0",
     "typescript": "^5",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.6",
     "wait-on": "^9.5.1"
   },
   "main": "dist-electron/main.js",
@@ -47,17 +51,20 @@
       "package.json"
     ],
     "mac": {
+      "icon": "public/icon.icns",
       "target": [
         "dmg"
       ],
       "category": "public.app-category.finance"
     },
     "win": {
+      "icon": "public/icon.ico",
       "target": [
         "nsis"
       ]
     },
     "linux": {
+      "icon": "public/icon.png",
       "target": [
         "AppImage"
       ]

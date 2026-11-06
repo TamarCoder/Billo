@@ -1,0 +1,57 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+
+.form {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+
+  > input {
+    flex: 1;
+  }
+}
+
+.iconButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-paper;
+  color: $color-text-strong;
+  cursor: pointer;
+  @include transition(background-color color border-color);
+
+  &:hover {
+    border-color: $color-border-strong;
+    background: $surface-hover;
+    color: $color-primary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.saveButton {
+  color: $color-success;
+
+  &:hover {
+    border-color: $color-success;
+    color: $color-success;
+  }
+}
+
+@media (max-width: 560px) {
+  .form {
+    gap: $space-1;
+  }
+}

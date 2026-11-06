@@ -1,0 +1,224 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.container {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-input;
+  box-shadow: var(--shadow-inset);
+  color: $color-text-strong;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  @include transition(border-color box-shadow background-color);
+
+  &:hover {
+    border-color: $color-border-strong;
+  }
+
+  &:focus-visible {
+    @include control-focus;
+    outline: none;
+  }
+}
+
+.value,
+.placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: $color-text-subtle;
+}
+
+.triggerIcon {
+  flex: 0 0 auto;
+  color: $color-primary;
+}
+
+.popover {
+  position: fixed;
+  z-index: 1000;
+  width: min(320px, calc(100vw - 32px));
+  max-height: min(80vh, 560px);
+  overflow-y: auto;
+  padding: $space-3;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-lg;
+  background: $surface-paper;
+  box-shadow: var(--shadow-lg);
+  color: $color-text;
+  animation: month-picker-enter 140ms ease-out;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-3;
+}
+
+.yearButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-text-strong;
+  cursor: pointer;
+  @include transition(background-color color transform);
+
+  &:hover {
+    background: $surface-hover;
+    color: $color-primary;
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.yearTitle {
+  color: $color-text-strong;
+  font-size: $text-md;
+  font-weight: $weight-semibold;
+  text-align: center;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-2;
+}
+
+.month {
+  min-height: 40px;
+  padding: $space-2;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-text;
+  font: inherit;
+  font-size: $text-sm;
+  text-transform: capitalize;
+  cursor: pointer;
+  @include transition(background-color border-color color transform);
+
+  &:hover {
+    background: $surface-hover;
+    color: $color-primary;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 1px;
+  }
+}
+
+.current {
+  border-color: $color-focus-ring;
+  color: $color-primary;
+  font-weight: $weight-semibold;
+}
+
+.selected {
+  border-color: $color-primary;
+  background: $color-primary;
+  color: $color-text-inverse;
+  font-weight: $weight-semibold;
+
+  &:hover {
+    background: $color-primary-hover;
+    color: $color-text-inverse;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+  margin-top: $space-3;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+}
+
+.selectedLabel {
+  overflow: hidden;
+  color: $color-text-muted;
+  font-size: $text-xs;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.currentButton {
+  flex: 0 0 auto;
+  padding: $space-2 $space-3;
+  border: 0;
+  border-radius: $radius-md;
+  background: $surface-hover;
+  color: $color-primary;
+  font: inherit;
+  font-size: $text-xs;
+  font-weight: $weight-semibold;
+  cursor: pointer;
+  @include transition(background-color color);
+
+  &:hover {
+    background: $surface-selected;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+@keyframes month-picker-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover {
+    animation: none;
+  }
+}

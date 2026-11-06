@@ -1,0 +1,200 @@
+@use "abstracts/typography" as *;
+
+.document {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 297mm);
+  aspect-ratio: 297 / 210;
+  margin-inline: auto;
+  padding: clamp(7px, 3.2cqi, 15mm);
+  overflow: visible;
+  border: 1px solid #c8c8c8;
+  background: #fff;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 12%);
+  color: #202020;
+  font-family: $font-invoice, $font-sans;
+  font-size: clamp(6px, 1.15cqi, 11pt);
+}
+
+.documentTable {
+  width: 100%;
+  height: 92%;
+  flex: 0 0 92%;
+  border: 1px solid #424242;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: #202020;
+  font-size: inherit;
+
+  th,
+  td {
+    padding: 1.2cqi;
+    border: 1px solid #555;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+  }
+
+  th {
+    font-weight: $weight-bold;
+  }
+}
+
+.mainColumn {
+  width: 78%;
+}
+
+.amountColumn {
+  width: 22%;
+}
+
+.titleRow {
+  height: 15%;
+}
+
+.titleCell {
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: 1.8em;
+    line-height: 1.15;
+  }
+}
+
+.referenceCell,
+.dateCell {
+  text-align: center;
+
+  strong,
+  span {
+    display: block;
+  }
+
+  strong {
+    margin-bottom: 0.6em;
+  }
+}
+
+.referenceCell {
+  line-height: 1.4;
+}
+
+.organizationRow {
+  height: 11%;
+}
+
+.organizationCell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1cqi;
+  text-align: center;
+}
+
+.bankRow {
+  height: 15%;
+}
+
+.bankCell {
+  font-size: 0.9em;
+
+  span {
+    display: block;
+    margin: 0.2em 0;
+  }
+}
+
+.dateCell {
+  font-size: 0.94em;
+}
+
+.emptyCell {
+  background: #fff;
+}
+
+.companyRow {
+  height: 18%;
+
+  td {
+    font-size: 1.55em;
+  }
+}
+
+.columnHeadingRow {
+  height: 9%;
+  text-align: center;
+
+  th {
+    font-size: 1.2em;
+  }
+}
+
+.itemRow {
+  height: 24%;
+}
+
+.descriptionCell {
+  vertical-align: top !important;
+
+  > strong {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 1.25em;
+  }
+
+  p {
+    margin: 0 0 1em;
+    font-size: 1.15em;
+    font-weight: $weight-semibold;
+  }
+}
+
+.amountCell {
+  text-align: center;
+
+  strong {
+    font-size: 1.5em;
+  }
+}
+
+.amountInWordsRow {
+  height: 8%;
+  font-size: 0.9em;
+}
+
+.responsiblePerson {
+  padding: 1cqi 0 0;
+  color: #202020;
+  font-size: 0.9em;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  :global(body *) {
+    visibility: hidden !important;
+  }
+
+  .document,
+  .document * {
+    visibility: visible !important;
+  }
+
+  .document {
+    position: fixed;
+    inset: 0;
+    width: 297mm;
+    height: 210mm;
+    max-width: none;
+    aspect-ratio: auto;
+    margin: 0;
+    padding: 12mm;
+    border: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

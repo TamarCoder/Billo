@@ -1,0 +1,41 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.button {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  min-height: 44px;
+  padding: 0 $space-3;
+  border: 0;
+  border-radius: $radius-lg;
+  background: transparent;
+  color: $color-text-strong;
+  font: inherit;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  text-align: left;
+  cursor: pointer;
+  @include transition(background-color color);
+
+  &:hover {
+    background: $surface-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: $color-warning;
+}

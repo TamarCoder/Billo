@@ -1,0 +1,22 @@
+@use "palette" as palette;
+
+$color-text-strong: var(--color-text-strong);
+$color-text: var(--color-text);
+$color-text-muted: var(--color-text-muted);
+$color-text-subtle: var(--color-text-subtle);
+$color-text-inverse: var(--color-text-inverse);
+$color-link: var(--color-link);
+
+$color-primary: var(--color-primary);
+$color-primary-hover: var(--color-primary-hover);
+$color-secondary: var(--color-secondary);
+$color-secondary-hover: var(--color-secondary-hover);
+$color-accent: var(--color-accent);
+$color-accent-hover: var(--color-accent-hover);
+$color-danger: var(--color-danger);
+$color-danger-hover: var(--color-danger-hover);
+$color-success: var(--color-success);
+$color-warning: var(--color-warning);
+$color-border: var(--color-border);
+$color-border-strong: var(--color-border-strong);
+$color-focus-ring: var(--color-focus-ring);

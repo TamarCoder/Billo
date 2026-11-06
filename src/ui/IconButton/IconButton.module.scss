@@ -1,0 +1,91 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/shadows" as *;
+@use "abstracts/surfaces" as *;
+
+.button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  @include transition(transform box-shadow background-color border-color color);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.sm {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-sm;
+}
+
+.md {
+  width: 40px;
+  height: 40px;
+}
+
+.lg {
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-lg;
+}
+
+.default {
+  background: $surface-input;
+  box-shadow: var(--shadow-sm);
+  color: $color-text-strong;
+
+  &:hover:not(:disabled) {
+    border-color: $color-border-strong;
+    background: $surface-glass-strong;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.ghost {
+  border-color: transparent;
+  background: transparent;
+  color: $color-text-muted;
+
+  &:hover:not(:disabled) {
+    background: $surface-hover;
+    color: $color-text-strong;
+  }
+}
+
+.danger {
+  border-color: color-mix(in srgb, $color-danger 30%, transparent);
+  background: color-mix(in srgb, $color-danger 14%, transparent);
+  color: $color-danger;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, $color-danger 24%, transparent);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

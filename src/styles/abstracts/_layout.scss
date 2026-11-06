@@ -1,0 +1,17 @@
+$sidebar-width: 280px;
+$content-max: 1440px;
+
+$control-h-sm: 36px;
+$control-h: 44px;
+$control-h-lg: 56px;
+$nav-link-h: 52px;
+$icon-button: 40px;
+$icon-size-sm: 18px;
+$icon-size: 20px;
+$icon-size-nav: 24px;
+
+$breakpoints: (
+  "sidebar": 960px,
+  "columns": 1100px,
+  "editor": 1180px,
+);

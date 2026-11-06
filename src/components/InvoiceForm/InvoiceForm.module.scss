@@ -1,0 +1,130 @@
+@use "abstracts/colors" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/typography" as *;
+
+.formCard {
+  min-width: 0;
+}
+
+.form {
+  display: grid;
+  gap: $space-4;
+}
+
+.formColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(250px, 0.75fr);
+  gap: $space-4;
+  align-items: start;
+  min-width: 0;
+}
+
+.formSection {
+  display: grid;
+  gap: $space-3;
+  min-width: 0;
+  margin: 0;
+  padding: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+}
+
+.rightColumn {
+  display: grid;
+  gap: $space-3;
+  min-width: 0;
+  margin-top: $space-2;
+  padding: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+}
+
+.formSection legend {
+  padding-inline: $space-2;
+  color: $color-text-strong;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+}
+
+.field {
+  display: grid;
+  gap: $space-1;
+  min-width: 0;
+}
+
+.field label {
+  color: $color-text-strong;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+}
+
+.fieldError {
+  margin: 0;
+  color: $color-danger;
+  font-size: $text-xs;
+}
+
+.companyName {
+  color: $color-text-muted;
+  font-size: $text-sm;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  align-items: start;
+  min-width: 0;
+}
+
+.bankGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 0.7fr) minmax(0, 1.6fr);
+  gap: $space-3;
+  align-items: start;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+}
+
+.actionGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-2;
+}
+
+.error {
+  margin: 0;
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
+.pdfSuccess {
+  color: $color-success;
+  font-size: $text-sm;
+}
+
+@media (max-width: 760px) {
+  .formColumns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rightColumn {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .fieldGrid,
+  .bankGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

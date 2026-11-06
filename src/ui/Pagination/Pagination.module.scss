@@ -1,0 +1,29 @@
+@use "abstracts/colors" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/typography" as *;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  color: $color-text-muted;
+  font-size: $text-sm;
+}
+
+.total {
+  min-width: 0;
+}
+
+.controls {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.page {
+  min-width: 3.5em;
+  color: $color-text-strong;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,133 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/shadows" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.dropdown {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.trigger {
+  display: flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+  padding: 0 $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-input;
+  box-shadow: var(--shadow-inset);
+  color: $color-text-strong;
+  font: inherit;
+  font-size: $text-sm;
+  text-align: left;
+  cursor: pointer;
+  @include transition(border-color background-color box-shadow);
+
+  &:hover {
+    border-color: $color-border-strong;
+    background: $surface-hover;
+  }
+
+  &:focus-visible,
+  &[aria-expanded="true"] {
+    border-color: $color-focus-ring;
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, $color-focus-ring 24%, transparent);
+  }
+}
+
+.value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  color: $color-text-muted;
+  @include transition(transform color);
+}
+
+.chevronOpen {
+  color: $color-primary;
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + #{$space-1});
+  right: 0;
+  left: 0;
+  z-index: 20;
+  display: grid;
+  max-height: 240px;
+  gap: 2px;
+  overflow-y: auto;
+  padding: $space-1;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-paper;
+  box-shadow: var(--shadow-lg, var(--shadow-md));
+  animation: menu-enter 120ms ease-out;
+}
+
+.option {
+  display: flex;
+  min-width: 0;
+  min-height: 36px;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+  padding: 0 $space-2;
+  border: 0;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $color-text-strong;
+  font: inherit;
+  font-size: $text-sm;
+  text-align: left;
+  cursor: pointer;
+  @include transition(background-color color);
+
+  &:hover,
+  &:focus-visible {
+    background: $surface-hover;
+    outline: none;
+  }
+
+  &[aria-selected="true"] {
+    background: $surface-selected;
+    color: $color-primary;
+    font-weight: $weight-semibold;
+  }
+}
+
+.activeOption:not([aria-selected="true"]) {
+  background: $surface-hover;
+}
+
+@keyframes menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    animation: none;
+  }
+}

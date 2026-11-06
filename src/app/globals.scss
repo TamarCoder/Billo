@@ -1,17 +1,5 @@
-@use "../styles/variables" as *;
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: $color-bg;
-  color: $color-text;
-  font-family: $font-stack;
-}
+@use "base/reset";
+@use "base/theme";
+@use "base/fonts";
+@use "base/base";
+@use "utilities/utilities";

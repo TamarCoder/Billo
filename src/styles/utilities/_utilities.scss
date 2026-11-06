@@ -1,0 +1,35 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/spacing" as *;
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+@each $step, $size in $spaces {
+  .gap-#{$step} {
+    gap: $size;
+  }
+}
+
+.grow {
+  flex: 1 1 auto;
+}
+
+.muted {
+  color: $color-text-muted;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  @include visually-hidden;
+}

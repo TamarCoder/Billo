@@ -13,8 +13,9 @@
 # testing
 /coverage
 
-# next.js
+# Vite
 /.next/
+/node_modules/.vite/
 /out/
 
 # production

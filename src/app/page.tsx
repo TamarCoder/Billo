@@ -1,9 +1,6 @@
-import styles from "./page.module.scss";
+import { Navigate } from "react-router-dom";
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <h1>Billo</h1>
-    </main>
-  );
+export default function App() {
+  return <Navigate to="/home" replace />;
 }
+ 

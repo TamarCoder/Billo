@@ -1,0 +1,21 @@
+@use "palette";
+
+$mesh-sky: var(--mesh-sky);
+$mesh-lavender: var(--mesh-lavender);
+$mesh-peach: var(--mesh-peach);
+$mesh-mint: var(--mesh-mint);
+$mesh-butter: var(--mesh-butter);
+$mesh-lilac: var(--mesh-lilac);
+$surface-page: var(--surface-page);
+$surface-glass: var(--surface-glass);
+$surface-glass-strong: var(--surface-glass-strong);
+$surface-sidebar: var(--surface-sidebar);
+$surface-dropzone: var(--surface-dropzone);
+$surface-input: var(--surface-input);
+$surface-hover: var(--surface-hover);
+$surface-selected: var(--surface-selected);
+$surface-paper: var(--surface-paper);
+$glass-border-color: var(--glass-border-color);
+$glass-blur: blur(22px) saturate(150%);
+$brand-gradient: var(--brand-gradient);
+$bg-mesh: var(--bg-mesh);

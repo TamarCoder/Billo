@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain, net, protocol, shell } from "electron";
+import { writeFile } from "node:fs/promises";
+import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -6,6 +7,9 @@ const isDev = !app.isPackaged;
 const DEV_URL = "http://localhost:3000";
 const APP_SCHEME = "app";
 const OUT_DIR = path.join(__dirname, "..", "out");
+const ICON_PATH = app.isPackaged
+  ? path.join(app.getAppPath(), "out", "icon.png")
+  : path.join(app.getAppPath(), "public", "icon.png");
 
 // Must run before the app is ready.
 protocol.registerSchemesAsPrivileged([
@@ -15,7 +19,7 @@ protocol.registerSchemesAsPrivileged([
   },
 ]);
 
-// Serve the Next.js static export from ./out with app://-/...
+// Serve the Vite single-page app from ./out with app://-/...
 function registerAppProtocol(): void {
   protocol.handle(APP_SCHEME, (request) => {
     const { pathname } = new URL(request.url);
@@ -26,7 +30,7 @@ function registerAppProtocol(): void {
       return new Response("Forbidden", { status: 403 });
     }
     if (!path.extname(filePath)) {
-      filePath = path.join(filePath, "index.html");
+      filePath = path.join(OUT_DIR, "index.html");
     }
     return net.fetch(pathToFileURL(filePath).toString());
   });
@@ -38,6 +42,16 @@ function createWindow(): void {
     height: 800,
     minWidth: 900,
     minHeight: 600,
+    title: "Billo",
+    titleBarStyle: "hidden",
+    ...(process.platform === "darwin" && {
+      trafficLightPosition: { x: 12, y: 12 },
+    }),
+    titleBarOverlay:
+      process.platform === "darwin"
+        ? undefined
+        : { color: "#252525", symbolColor: "#ffffff", height: 40 },
+    icon: ICON_PATH,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -83,6 +97,39 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(() => {
     ipcMain.handle("app:get-version", () => app.getVersion());
+    ipcMain.handle("invoice:export-pdf", async (event) => {
+      const senderFrame = event.senderFrame;
+      if (!senderFrame || senderFrame !== event.sender.mainFrame) {
+        throw new Error("Invoice PDF export is only available to the app window.");
+      }
+
+      const senderUrl = new URL(senderFrame.url);
+      const isAllowedSender =
+        (isDev && senderUrl.origin === DEV_URL) ||
+        (!isDev && senderUrl.protocol === `${APP_SCHEME}:` && senderUrl.host === "-");
+      const window = BrowserWindow.fromWebContents(event.sender);
+
+      if (!window || !isAllowedSender) {
+        throw new Error("Invoice PDF export is only available to the app window.");
+      }
+
+      const { canceled, filePath } = await dialog.showSaveDialog(window, {
+        title: "ინვოისის PDF ექსპორტი",
+        defaultPath: "invoice.pdf",
+        filters: [{ name: "PDF", extensions: ["pdf"] }],
+      });
+      if (canceled || !filePath) return { status: "canceled" as const };
+
+      const pdf = await window.webContents.printToPDF({
+        pageSize: "A4",
+        landscape: true,
+        printBackground: true,
+        preferCSSPageSize: true,
+      });
+      await writeFile(filePath, pdf);
+      return { status: "saved" as const };
+    });
+    if (process.platform === "darwin") app.dock?.setIcon(ICON_PATH);
     if (!isDev) registerAppProtocol();
     createWindow();
 
