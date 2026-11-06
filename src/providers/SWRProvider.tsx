@@ -2,6 +2,7 @@
 
 import { SWRConfig } from "swr";
 import type { ReactNode } from "react";
+import { ApiKeyGate } from "@/components/ApiKeyGate/ApiKeyGate";
 import { fetcher } from "@/lib/fetcher";
 
 export function SWRProvider({ children }: { children: ReactNode }) {
@@ -13,7 +14,7 @@ export function SWRProvider({ children }: { children: ReactNode }) {
         shouldRetryOnError: false,
       }}
     >
-      {children}
+      <ApiKeyGate>{children}</ApiKeyGate>
     </SWRConfig>
   );
 }

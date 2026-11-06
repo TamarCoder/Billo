@@ -8,6 +8,12 @@ import {
   INSURANCE_COMPANIES_KEY,
   readCompanies,
 } from "@/lib/companyStorage";
+import {
+  API_KEY_HEADER,
+  apiKeyHeaders,
+  getApiKey,
+  requireApiKey,
+} from "@/lib/apiKey";
 
 // Base URL of Billo--Backend. Set VITE_API_URL in .env.local.
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
@@ -62,6 +68,7 @@ async function ensureLocalDataImported(): Promise<void> {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
+            ...apiKeyHeaders(),
           },
           body: JSON.stringify(data),
         },
@@ -72,6 +79,8 @@ async function ensureLocalDataImported(): Promise<void> {
         { cause: error },
       );
     }
+
+    if (response.status === 401) requireApiKey();
 
     const responseText = await response.text();
     let body: unknown = null;
@@ -111,6 +120,8 @@ export async function fetcher<T>(path: string, init?: RequestInit): Promise<T> {
   await ensureLocalDataImported();
   const headers = new Headers(init?.headers);
   headers.set("Accept", "application/json");
+  const apiKey = getApiKey();
+  if (apiKey) headers.set(API_KEY_HEADER, apiKey);
   if (init?.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
@@ -121,6 +132,7 @@ export async function fetcher<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers,
   });
+  if (res.status === 401) requireApiKey();
   const responseText = res.status === 204 ? "" : await res.text();
   let body: unknown = null;
 

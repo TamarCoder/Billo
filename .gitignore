@@ -46,3 +46,5 @@ next-env.d.ts
 /release/
 
 !.env.example
+# Production API URL for desktop (Electron) builds; not a secret.
+!.env.production
