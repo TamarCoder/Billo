@@ -112,7 +112,6 @@
   white-space: nowrap;
 }
 
-.itemActions,
 .iconButton {
   display: grid;
   width: 36px;
@@ -136,6 +135,13 @@
     outline: 2px solid $color-focus-ring;
     outline-offset: 2px;
   }
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex: 0 0 auto;
 }
 
 .emptyState {
