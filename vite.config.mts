@@ -14,7 +14,7 @@ export default defineConfig({
       },
     },
   },
-  base: "./",
+  base: process.env.VERCEL === "1" ? "/" : "./",
   build: {
     outDir: "out",
     emptyOutDir: true,
