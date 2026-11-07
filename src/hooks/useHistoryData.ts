@@ -5,7 +5,7 @@ interface UseHistoryDataOptions {
   records: InvoiceRecord[];
   registeredCompanies: InsuranceCompany[];
   search: string;
-  year: string;
+  reportingMonth: string;
   date: string;
   company: string;
   status: string;
@@ -17,24 +17,13 @@ export function useHistoryData({
   records,
   registeredCompanies,
   search,
-  year,
+  reportingMonth,
   date,
   company,
   status,
   currentPage,
   itemsPerPage,
 }: UseHistoryDataOptions) {
-  const years = useMemo(
-    () =>
-      [
-        ...new Set(
-          records.map((record) => record.invoice.reportingMonth.slice(0, 4)),
-        ),
-      ]
-        .filter((value) => /^\d{4}$/u.test(value))
-        .sort((left, right) => right.localeCompare(left)),
-    [records],
-  );
   const companies = useMemo(
     () =>
       [
@@ -55,13 +44,13 @@ export function useHistoryData({
         (!query ||
           invoice.invoiceNumber.toLocaleLowerCase("ka-GE").includes(query) ||
           invoice.issuerName.toLocaleLowerCase("ka-GE").includes(query)) &&
-        (!year || invoice.reportingMonth.startsWith(year)) &&
+        (!reportingMonth || invoice.reportingMonth === reportingMonth) &&
         (!date || invoice.sendingDate === date) &&
         (!company || invoice.issuerName === company) &&
         (!status || record.status === status)
       );
     });
-  }, [company, date, records, search, status, year]);
+  }, [company, date, records, reportingMonth, search, status]);
   const totalPages = Math.max(
     1,
     Math.ceil(filteredRecords.length / itemsPerPage),
@@ -71,5 +60,5 @@ export function useHistoryData({
     currentPage * itemsPerPage,
   );
 
-  return { years, companies, filteredRecords, totalPages, visibleRecords };
+  return { companies, filteredRecords, totalPages, visibleRecords };
 }

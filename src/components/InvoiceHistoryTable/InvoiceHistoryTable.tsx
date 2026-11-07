@@ -1,4 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
+import { parseAmountToMinorUnits } from "@/lib/georgianAmount";
 import { Badge } from "@/ui/Badge/Badge";
 import { Button } from "@/ui/Button/Button";
 import { INVOICE_STATUS_OPTIONS } from "./invoiceStatus";
@@ -18,12 +19,12 @@ function formatReportingPeriod(value: string) {
 }
 
 function formatAmount(value: string) {
-  const amount = Number(value);
-  if (!value.trim() || !Number.isFinite(amount)) return "—";
+  const minorUnits = parseAmountToMinorUnits(value);
+  if (minorUnits === null) return "—";
   return `${new Intl.NumberFormat("ka-GE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount)} ₾`;
+  }).format(minorUnits / 100)} ₾`;
 }
 
 export function InvoiceHistoryTable({

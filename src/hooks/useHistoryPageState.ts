@@ -3,7 +3,7 @@ import type { InvoiceRecord } from "@/types/invoice";
 
 export function useHistoryPageState() {
   const [search, setSearch] = useState("");
-  const [year, setYear] = useState("");
+  const [reportingMonth, setReportingMonth] = useState("");
   const [date, setDate] = useState("");
   const [company, setCompany] = useState("");
   const [status, setStatus] = useState("");
@@ -14,8 +14,8 @@ export function useHistoryPageState() {
   return {
     search,
     setSearch,
-    year,
-    setYear,
+    reportingMonth,
+    setReportingMonth,
     date,
     setDate,
     company,

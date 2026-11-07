@@ -2,6 +2,7 @@ import { Plus, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/Card/Card";
 import { DatePicker } from "@/components/DatePicker/DatePicker";
+import { MonthYearPicker } from "@/components/MonthYearPicker/MonthYearPicker";
 import { InvoiceDocument } from "@/components/InvoiceDocument/InvoiceDocument";
 import { InvoiceHistoryTable } from "@/components/InvoiceHistoryTable/InvoiceHistoryTable";
 import { INVOICE_STATUS_OPTIONS } from "@/components/InvoiceHistoryTable/invoiceStatus";
@@ -13,6 +14,7 @@ import { useHistoryData } from "@/hooks/useHistoryData";
 import { useHistoryPageState } from "@/hooks/useHistoryPageState";
 import { useExportHistoryPdf } from "@/hooks/useExportHistoryPdf";
 import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
+import { formatGeorgianMonthYear } from "@/lib/georgianMonth";
 import { useInvoices } from "@/hooks/api/useInvoices";
 import { useCompanies } from "@/hooks/api/useCompanies";
 import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
@@ -26,15 +28,6 @@ function formatDate(value: string) {
   return year && month && day ? `${day}.${month}.${year}` : value;
 }
 
-function formatReportingMonth(value: string) {
-  const [year, month] = value.split("-").map(Number);
-  if (!year || !month || month < 1 || month > 12) return value;
-  return new Intl.DateTimeFormat("ka-GE", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(year, month - 1, 1));
-}
-
 export default function History() {
   const navigate = useNavigate();
   const { data: records = [], error: loadError } = useInvoices();
@@ -46,8 +39,8 @@ export default function History() {
   const {
     search,
     setSearch,
-    year,
-    setYear,
+    reportingMonth,
+    setReportingMonth,
     date,
     setDate,
     company,
@@ -63,12 +56,12 @@ export default function History() {
   } = useHistoryPageState();
   useExportHistoryPdf({ pdfRecord, setPdfRecord, setError });
 
-  const { years, companies, filteredRecords, totalPages, visibleRecords } =
+  const { companies, filteredRecords, totalPages, visibleRecords } =
     useHistoryData({
       records,
       registeredCompanies,
       search,
-      year,
+      reportingMonth,
       date,
       company,
       status,
@@ -143,21 +136,36 @@ export default function History() {
 
       <Card className={styles.historyCard} padding="sm">
         <div className={styles.filters} aria-label="ინვოისების ფილტრები">
-          <div className={`${styles.filter} ${styles.yearFilter}`}>
-            <span>წელი</span>
-            <Dropdown
-              className={styles.filterSelect}
-              aria-label="წლის მიხედვით გაფილტვრა"
-              options={[
-                { value: "", label: "ყველა" },
-                ...years.map((item) => ({ value: item, label: item })),
-              ]}
-              value={year}
-              onChange={(value) => {
-                setYear(value);
-                setCurrentPage(1);
-              }}
-            />
+          <div className={`${styles.filter} ${styles.reportingMonthFilter}`}>
+            <label htmlFor="history-reporting-month-filter">
+              საანგარიშო პერიოდი
+            </label>
+            <div className={styles.dateFilterControl}>
+              <MonthYearPicker
+                id="history-reporting-month-filter"
+                className={styles.filterDatePicker}
+                value={reportingMonth}
+                placeholder="ყველა პერიოდი"
+                aria-label="საანგარიშო პერიოდით გაფილტვრა"
+                onChange={(value) => {
+                  setReportingMonth(value);
+                  setCurrentPage(1);
+                }}
+              />
+              {reportingMonth && (
+                <button
+                  type="button"
+                  className={styles.clearDateButton}
+                  aria-label="საანგარიშო პერიოდის ფილტრის გასუფთავება"
+                  onClick={() => {
+                    setReportingMonth("");
+                    setCurrentPage(1);
+                  }}
+                >
+                  <X size={15} aria-hidden="true" />
+                </button>
+              )}
+            </div>
           </div>
           <div className={`${styles.filter} ${styles.dateFilter}`}>
             <label htmlFor="history-date-filter">თარიღი</label>
@@ -289,7 +297,7 @@ export default function History() {
             bankCode={pdfRecord.invoice.bankCode}
             bankAccount={pdfRecord.invoice.bankAccount}
             companyName={pdfRecord.invoice.issuerName}
-            reportingMonth={formatReportingMonth(
+            reportingMonth={formatGeorgianMonthYear(
               pdfRecord.invoice.reportingMonth,
             )}
             serviceDescription={pdfRecord.invoice.reportingDescription}

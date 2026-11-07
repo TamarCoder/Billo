@@ -1,4 +1,5 @@
 import type { FieldError, Resolver } from "react-hook-form";
+import { parseAmountToMinorUnits } from "@/lib/georgianAmount";
 import type { InvoiceDraft } from "@/types/invoice";
 
 const requiredFields = {
@@ -45,9 +46,8 @@ export const invoiceDraftResolver: Resolver<InvoiceDraft> = async (values) => {
     setError("sendingDate", "გაგზავნის თარიღი არასწორია.");
   }
   if (values.amount.trim()) {
-    const amount = Number(values.amount);
-    if (!Number.isFinite(amount) || amount < 0) {
-      setError("amount", "თანხა არ უნდა იყოს ნულზე ნაკლები.");
+    if (parseAmountToMinorUnits(values.amount) === null) {
+      setError("amount", "თანხა შეიყვანეთ სწორად, მაქსიმუმ 2 ათწილადი ნიშნით.");
     }
   }
 

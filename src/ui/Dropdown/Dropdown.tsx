@@ -1,10 +1,7 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronDown } from "lucide-react";
+import { useAnchoredPopoverPosition } from "@/hooks/useAnchoredPopover";
 import styles from "./Dropdown.module.scss";
 
 export interface DropdownOption {
@@ -33,19 +30,35 @@ export function Dropdown({
   );
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuPosition = useAnchoredPopoverPosition(isOpen, {
+    triggerRef,
+    popoverRef: menuRef,
+  });
   const selectedOption = options.find((option) => option.value === value);
   const listboxId = `${ariaLabel.replace(/\s+/gu, "-")}-options`;
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const closeOnOutsideClick = (event: MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !rootRef.current?.contains(event.target) &&
+        !menuRef.current?.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", closeOnOutsideClick);
-    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
   }, [isOpen]);
 
   const openMenu = (index = options.findIndex((option) => option.value === value)) => {
@@ -106,35 +119,39 @@ export function Dropdown({
           aria-hidden="true"
         />
       </button>
-      {isOpen && (
-        <div
-          className={styles.menu}
-          id={listboxId}
-          role="listbox"
-          aria-label={ariaLabel}
-          aria-activedescendant={`${listboxId}-option-${activeIndex}`}
-        >
-          {options.map((option, index) => (
-            <button
-              key={option.value}
-              id={`${listboxId}-option-${index}`}
-              className={`${styles.option} ${
-                index === activeIndex ? styles.activeOption : ""
-              }`}
-              type="button"
-              role="option"
-              aria-selected={option.value === value}
-              onMouseEnter={() => setActiveIndex(index)}
-              onClick={() => selectOption(option)}
-            >
-              <span>{option.label}</span>
-              {option.value === value && (
-                <Check size={15} aria-hidden="true" />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            ref={menuRef}
+            className={styles.menu}
+            style={menuPosition ?? { visibility: "hidden" }}
+            id={listboxId}
+            role="listbox"
+            aria-label={ariaLabel}
+            aria-activedescendant={`${listboxId}-option-${activeIndex}`}
+          >
+            {options.map((option, index) => (
+              <button
+                key={option.value}
+                id={`${listboxId}-option-${index}`}
+                className={`${styles.option} ${
+                  index === activeIndex ? styles.activeOption : ""
+                }`}
+                type="button"
+                role="option"
+                aria-selected={option.value === value}
+                onMouseEnter={() => setActiveIndex(index)}
+                onClick={() => selectOption(option)}
+              >
+                <span>{option.label}</span>
+                {option.value === value && (
+                  <Check size={15} aria-hidden="true" />
+                )}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

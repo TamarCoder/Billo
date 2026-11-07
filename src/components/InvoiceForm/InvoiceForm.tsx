@@ -8,6 +8,7 @@ import { Badge } from "@/ui/Badge/Badge";
 import { Button } from "@/ui/Button/Button";
 import { Input } from "@/ui/Input/Input";
 import { Select } from "@/ui/Select/Select";
+import { amountToGeorgianWords } from "@/lib/georgianAmount";
 import type { InvoiceDraft } from "@/types/invoice";
 import { invoiceDraftResolver } from "./invoiceDraftResolver";
 import type { FieldProps, InvoiceFormProps } from "./types";
@@ -46,6 +47,7 @@ export function InvoiceForm({
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<InvoiceDraft>({
     defaultValues: initialValues,
@@ -57,7 +59,14 @@ export function InvoiceForm({
   const registerField = (name: keyof InvoiceDraft) =>
     register(name, {
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        onDraftChange(name, event.currentTarget.value);
+        const value = event.currentTarget.value;
+        onDraftChange(name, value);
+
+        if (name === "amount") {
+          const amountInWords = amountToGeorgianWords(value);
+          setValue("amountInWords", amountInWords);
+          onDraftChange("amountInWords", amountInWords);
+        }
       },
     });
 
@@ -311,10 +320,9 @@ export function InvoiceForm({
             >
               <Input
                 id="invoice-amount"
-                type="number"
-                min="0"
-                step="0.01"
+                type="text"
                 inputMode="decimal"
+                autoComplete="off"
                 status={errors.amount ? "error" : "default"}
                 aria-describedby={errors.amount ? "invoice-amount-error" : undefined}
                 {...registerField("amount")}

@@ -7,6 +7,7 @@ import { useCompanies } from "@/hooks/api/useCompanies";
 import { useInvoices } from "@/hooks/api/useInvoices";
 import { useOrganizationSettings } from "@/hooks/api/useOrganizationSettings";
 import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
+import { formatGeorgianMonthYear } from "@/lib/georgianMonth";
 import {
   DEFAULT_ORGANIZATION_SETTINGS,
   INVOICE_EDIT_ID_KEY,
@@ -17,16 +18,6 @@ import styles from "./page.module.scss";
 function formatInvoiceDate(value: string) {
   const [year, month, day] = value.split("-");
   return year && month && day ? `${day}.${month}.${year}` : value;
-}
-
-function formatReportingMonth(value: string) {
-  const [year, month] = value.split("-").map(Number);
-  if (!year || !month || month < 1 || month > 12) return value;
-
-  return new Intl.DateTimeFormat("ka-GE", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(year, month - 1, 1));
 }
 
 function getInitialDraft(): InvoiceDraft {
@@ -229,7 +220,7 @@ export default function Home() {
             bankCode={draft.bankCode}
             bankAccount={draft.bankAccount}
             companyName={draft.issuerName}
-            reportingMonth={formatReportingMonth(draft.reportingMonth)}
+            reportingMonth={formatGeorgianMonthYear(draft.reportingMonth)}
             serviceDescription={draft.reportingDescription}
             amount={draft.amount}
             amountInWords={draft.amountInWords}

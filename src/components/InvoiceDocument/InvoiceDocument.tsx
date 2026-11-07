@@ -1,3 +1,4 @@
+import { parseAmountToMinorUnits } from "@/lib/georgianAmount";
 import styles from "./InvoiceDocument.module.scss";
 
 export interface InvoiceDocumentProps {
@@ -19,12 +20,12 @@ export interface InvoiceDocumentProps {
 }
 
 function formatAmount(amount: string) {
-  if (!amount.trim()) return "";
-  const numericAmount = Number(amount);
-  if (!Number.isFinite(numericAmount)) return "";
+  const minorUnits = parseAmountToMinorUnits(amount);
+  if (minorUnits === null) return "";
+  const numericAmount = minorUnits / 100;
 
   return `${new Intl.NumberFormat("ka-GE", {
-    minimumFractionDigits: Number.isInteger(numericAmount) ? 0 : 2,
+    minimumFractionDigits: minorUnits % 100 === 0 ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(numericAmount)} ₾`;
 }

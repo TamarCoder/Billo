@@ -2,13 +2,11 @@ import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAnchoredPopoverPosition } from "@/hooks/useAnchoredPopover";
+import {
+  formatGeorgianMonthYear,
+  GEORGIAN_MONTHS,
+} from "@/lib/georgianMonth";
 import styles from "./MonthYearPicker.module.scss";
-
-const MONTHS = Array.from({ length: 12 }, (_, index) =>
-  new Intl.DateTimeFormat("ka-GE", { month: "long" }).format(
-    new Date(2024, index, 1),
-  ),
-);
 
 export interface MonthYearPickerProps {
   id?: string;
@@ -16,6 +14,8 @@ export interface MonthYearPickerProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
+  "aria-label"?: string;
   required?: boolean;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
@@ -31,14 +31,7 @@ function parseMonthYear(value: string) {
 }
 
 function formatMonthYear(value: string) {
-  const selected = parseMonthYear(value);
-  if (!selected) return "";
-
-  const label = new Intl.DateTimeFormat("ka-GE", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(selected.year, selected.month - 1, 1));
-  return label.charAt(0).toLocaleUpperCase("ka-GE") + label.slice(1);
+  return formatGeorgianMonthYear(value);
 }
 
 export function MonthYearPicker({
@@ -47,6 +40,8 @@ export function MonthYearPicker({
   value,
   onChange,
   placeholder = "აირჩიეთ თვე და წელი",
+  className,
+  "aria-label": ariaLabel,
   required = false,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
@@ -113,10 +108,11 @@ export function MonthYearPicker({
         ref={triggerRef}
         id={triggerId}
         type="button"
-        className={styles.trigger}
+        className={[styles.trigger, className].filter(Boolean).join(" ")}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-controls={popoverId}
+        aria-label={ariaLabel}
         aria-required={required || undefined}
         aria-invalid={ariaInvalid || undefined}
         aria-describedby={ariaDescribedBy}
@@ -161,7 +157,7 @@ export function MonthYearPicker({
           </div>
 
           <div className={styles.monthGrid} role="grid" aria-label="თვეები">
-            {MONTHS.map((month, index) => {
+            {GEORGIAN_MONTHS.map((month, index) => {
               const monthValue = `${visibleYear}-${String(index + 1).padStart(2, "0")}`;
               const isSelected = monthValue === value;
               const isCurrent =
