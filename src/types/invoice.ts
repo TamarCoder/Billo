@@ -35,5 +35,6 @@ export interface InvoiceRecord {
 
 export interface InsuranceCompany {
   id: string;
+  number: string;
   name: string;
 }

@@ -87,7 +87,8 @@
 
 .companyItem {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  /* შეცვლილია: ნომერი | სახელი | ხატულები */
+  grid-template-columns: 20px minmax(0, 1fr) auto;
   align-items: center;
   gap: $space-3;
   min-height: 64px;
@@ -102,6 +103,14 @@
 .editingItem {
   border-color: $color-focus-ring;
   background: $surface-selected;
+}
+
+/* ახალი */
+.companyNumber {
+  color: $color-text-muted;
+  font-size: $text-md;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .companyName {
@@ -173,6 +182,8 @@
   }
 
   .companyItem {
+    /* შეცვლილია: პატარა ეკრანზე ნომრის სვეტი ვიწროვდება */
+    grid-template-columns: 56px minmax(0, 1fr) auto;
     gap: $space-2;
     padding: $space-2;
   }

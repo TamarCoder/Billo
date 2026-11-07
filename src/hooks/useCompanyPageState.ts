@@ -6,6 +6,7 @@ export function useCompanyPageState() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
+  const [numberDraft, setNumberDraft] = useState(""); 
   const [search, setSearch] = useState("");
 
   return {
@@ -19,6 +20,8 @@ export function useCompanyPageState() {
     setIsCreating,
     nameDraft,
     setNameDraft,
+    numberDraft,      
+    setNumberDraft,
     search,
     setSearch,
   };

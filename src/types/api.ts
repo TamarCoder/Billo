@@ -12,8 +12,14 @@ export interface ApiErrorResponse {
   details?: unknown;
 }
 
-export type CreateInsuranceCompanyRequest = Pick<InsuranceCompany, "name">;
-export type UpdateInsuranceCompanyRequest = Pick<InsuranceCompany, "name">;
+export type CreateInsuranceCompanyRequest = Pick<
+  InsuranceCompany,
+  "number" | "name"
+>;
+export type UpdateInsuranceCompanyRequest = Pick<
+  InsuranceCompany,
+  "number" | "name"
+>;
 
 export type CreateInvoiceRequest = InvoiceDraft;
 export type UpdateInvoiceRequest = InvoiceDraft;

@@ -5,32 +5,44 @@ import type { CompanyNameFormProps } from "./types";
 import styles from "./CompanyNameForm.module.scss";
 
 export function CompanyNameForm({
+  number,
   name,
+  onNumberChange,
   onNameChange,
   onSubmit,
   onCancel,
 }: CompanyNameFormProps) {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const trimmedNumber = number.trim();
     const trimmedName = name.trim();
-    if (trimmedName) onSubmit(trimmedName);
+    if (trimmedNumber && trimmedName) onSubmit(trimmedNumber, trimmedName);
   };
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
+      <Input
+        className={styles.numberInput}
+        aria-label="კომპანიის ნომერი"
+        name="number"
+        value={number}
+        placeholder="ნომერი"
+        required
+        autoFocus
+        onChange={(event) => onNumberChange(event.currentTarget.value)}
+      />
       <Input
         aria-label="კომპანიის სახელი"
         name="name"
         value={name}
         placeholder="კომპანიის სახელი"
         required
-        autoFocus
         onChange={(event) => onNameChange(event.currentTarget.value)}
       />
       <button
         type="submit"
         className={`${styles.iconButton} ${styles.saveButton}`}
-        aria-label="სახელის შენახვა"
+        aria-label="კომპანიის შენახვა"
       >
         <Check size={17} />
       </button>

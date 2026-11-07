@@ -25,6 +25,7 @@ export default function Companies() {
     deleteCompany: removeCompany,
     isMutating,
   } = useCompanyMutations();
+
   const {
     storageError,
     setStorageError,
@@ -36,15 +37,23 @@ export default function Companies() {
     setIsCreating,
     nameDraft,
     setNameDraft,
+    numberDraft,
+    setNumberDraft,
     search,
     setSearch,
   } = useCompanyPageState();
 
-  const filteredCompanies = companies.filter((company) =>
-    company.name
-      .toLocaleLowerCase("ka-GE")
-      .includes(search.trim().toLocaleLowerCase("ka-GE")),
+  const query = search.trim().toLocaleLowerCase("ka-GE");
+
+  const matchesQuery = (company: InsuranceCompany) =>
+    (company.name ?? "").toLocaleLowerCase("ka-GE").includes(query) ||
+    (company.number ?? "").toLocaleLowerCase("ka-GE").includes(query);
+
+  const sortedCompanies = [...companies].sort((a, b) =>
+    (a.number ?? "").localeCompare(b.number ?? "", "ka-GE", { numeric: true }),
   );
+
+  const filteredCompanies = sortedCompanies.filter(matchesQuery);
   const totalPages = Math.max(
     1,
     Math.ceil(filteredCompanies.length / ITEMS_PER_PAGE),
@@ -54,33 +63,43 @@ export default function Companies() {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  const resetEditing = () => {
+    setEditingId(null);
+    setNumberDraft("");
+    setNameDraft("");
+    setIsCreating(false);
+  };
+
   const startCreating = () => {
     if (editingId) return;
     setSearch("");
-    setCurrentPage(Math.max(1, Math.ceil((companies.length + 1) / ITEMS_PER_PAGE)));
+    setCurrentPage(1);
     setEditingId(NEW_COMPANY_ID);
     setIsCreating(true);
+    setNumberDraft("");
     setNameDraft("");
     setStorageError("");
   };
 
   const startEditing = (company: InsuranceCompany) => {
     setEditingId(company.id);
+    setNumberDraft(company.number ?? "");
     setNameDraft(company.name);
     setIsCreating(false);
   };
 
-  const saveName = async (name: string, companyId: string) => {
+  const saveCompany = async (
+    companyId: string,
+    number: string,
+    name: string,
+  ) => {
     try {
       if (isCreating) {
-        await createCompany({ name });
-        setCurrentPage(
-          Math.max(1, Math.ceil((companies.length + 1) / ITEMS_PER_PAGE)),
-        );
+        await createCompany({ number, name });
       } else {
-        await updateCompany(companyId, { name });
-        setCurrentPage(1);
+        await updateCompany(companyId, { number, name });
       }
+      setCurrentPage(1);
     } catch (error) {
       setStorageError(
         error instanceof Error ? error.message : "კომპანიის შენახვა ვერ მოხერხდა.",
@@ -88,15 +107,7 @@ export default function Companies() {
       return;
     }
     setStorageError("");
-    setEditingId(null);
-    setNameDraft("");
-    setIsCreating(false);
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setNameDraft("");
-    setIsCreating(false);
+    resetEditing();
   };
 
   const deleteCompany = async (companyId: string) => {
@@ -113,21 +124,14 @@ export default function Companies() {
       return;
     }
 
-    const query = search.trim().toLocaleLowerCase("ka-GE");
-    const remainingFilteredCount = remainingCompanies.filter((company) =>
-      company.name.toLocaleLowerCase("ka-GE").includes(query),
-    ).length;
+    const remainingFilteredCount = remainingCompanies.filter(matchesQuery).length;
     setCurrentPage((page) =>
       Math.min(
         page,
         Math.max(1, Math.ceil(remainingFilteredCount / ITEMS_PER_PAGE)),
       ),
     );
-    if (editingId === companyId) {
-      setEditingId(null);
-      setNameDraft("");
-      setIsCreating(false);
-    }
+    if (editingId === companyId) resetEditing();
   };
 
   return (
@@ -188,10 +192,14 @@ export default function Companies() {
               key={NEW_COMPANY_ID}
             >
               <CompanyNameForm
+                number={numberDraft}
                 name={nameDraft}
+                onNumberChange={setNumberDraft}
                 onNameChange={setNameDraft}
-                onSubmit={(name) => saveName(name, NEW_COMPANY_ID)}
-                onCancel={cancelEdit}
+                onSubmit={(number, name) =>
+                  saveCompany(NEW_COMPANY_ID, number, name)
+                }
+                onCancel={resetEditing}
               />
             </article>
           )}
@@ -205,19 +213,24 @@ export default function Companies() {
               >
                 {isEditing ? (
                   <CompanyNameForm
+                    number={numberDraft}
                     name={nameDraft}
+                    onNumberChange={setNumberDraft}
                     onNameChange={setNameDraft}
-                    onSubmit={(name) => saveName(name, company.id)}
-                    onCancel={cancelEdit}
+                    onSubmit={(number, name) =>
+                      saveCompany(company.id, number, name)
+                    }
+                    onCancel={resetEditing}
                   />
                 ) : (
                   <>
+                    <span className={styles.companyNumber}>{company.number}</span>
                     <strong className={styles.companyName}>{company.name}</strong>
                     <div className={styles.itemActions}>
                       <button
                         type="button"
                         className={styles.iconButton}
-                        aria-label={`${company.name} სახელის რედაქტირება`}
+                        aria-label={`${company.name} რედაქტირება`}
                         disabled={isMutating}
                         onClick={() => startEditing(company)}
                       >
