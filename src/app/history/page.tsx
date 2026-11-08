@@ -16,7 +16,6 @@ import { useHistoryData } from "@/hooks/useHistoryData";
 import { useHistoryPageState } from "@/hooks/useHistoryPageState";
 import { useExportHistoryPdf } from "@/hooks/useExportHistoryPdf";
 import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
-import { useIssuers } from "@/hooks/api/useIssuers";
 import { formatGeorgianMonthYear } from "@/lib/georgianMonth";
 import { useInvoices } from "@/hooks/api/useInvoices";
 import { useCompanies } from "@/hooks/api/useCompanies";
@@ -33,11 +32,6 @@ function formatDate(value: string) {
 
 export default function History() {
   const navigate = useNavigate();
-  const { data: issuers } = useIssuers();
-  const primaryInvoicePath = (() => {
-    const primary = issuers?.find((issuer) => issuer.isPrimary) ?? issuers?.[0];
-    return primary ? `/invoice/${primary.id}` : "/home";
-  })();
   const { data: records = [], error: loadError } = useInvoices();
   const {
     data: registeredCompanies = [],
@@ -101,7 +95,7 @@ export default function History() {
   const editRecord = (record: InvoiceRecord) => {
     try {
       window.localStorage.setItem(INVOICE_EDIT_ID_KEY, record.id);
-      navigate(primaryInvoicePath);
+      navigate("/invoice");
     } catch {
       setError("ინვოისის გასახსნელად მომზადება ვერ მოხერხდა.");
     }
@@ -132,10 +126,9 @@ export default function History() {
             />
           </label>
           <Button
-            variant="success"
             size="sm"
             leadingIcon={<Plus size={16} />}
-            onClick={() => navigate(primaryInvoicePath)}
+            onClick={() => navigate("/invoice")}
           >
             ახალი ინვოისი
           </Button>

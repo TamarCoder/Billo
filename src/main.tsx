@@ -35,6 +35,7 @@ createRoot(rootElement).render(
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/home" element={<HomePage />} />
+              <Route path="/invoice" element={<InvoicePage />} />
               <Route path="/invoice/:issuerId" element={<InvoicePage />} />
               <Route path="/companies" element={<Companies />} />
               <Route path="/history" element={<History />} />

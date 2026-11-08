@@ -24,7 +24,6 @@ export function Aside() {
   const navigate = useNavigate();
   const { data: issuers } = useIssuers();
   const primaryIssuer = issuers?.find((issuer) => issuer.isPrimary) ?? issuers?.[0];
-  const invoicePath = primaryIssuer ? `/invoice/${primaryIssuer.id}` : "/home";
 
   const logout = async () => {
     setIsLoggingOut(true);
@@ -72,7 +71,7 @@ export function Aside() {
       <nav className={styles.navigation} aria-label="მთავარი ნავიგაცია">
         <AsideButton {...homeItem} className={styles.link} />
         <AsideButton
-          to={invoicePath}
+          to={primaryIssuer ? `/invoice/${primaryIssuer.id}` : "/invoice"}
           title="ინვოისის ფორმა"
           icon={<FileText size={20} />}
           className={styles.link}

@@ -52,7 +52,10 @@ export default function InvoicePage() {
     error: issuersLoadError,
     isLoading: settingsLoading,
   } = useIssuers();
-  const issuer = issuers?.find((item) => item.id === issuerId);
+  // Without an id in the address, the form opens for the primary organization.
+  const issuer = issuerId
+    ? issuers?.find((item) => item.id === issuerId)
+    : (issuers?.find((item) => item.isPrimary) ?? issuers?.[0]);
   const settingsLoadError =
     issuersLoadError ?? (issuers && !issuer ? new Error("ორგანიზაცია ვერ მოიძებნა.") : undefined);
   const settings = useMemo(() => {
@@ -86,7 +89,8 @@ export default function InvoicePage() {
   useLoadInvoicePage({
     records,
     settings,
-    isReady: !invoicesLoading && !settingsLoading && !invoicesLoadError && !settingsLoadError,
+    // An invoice being edited already carries its issuer, so a missing organization must not block it.
+    isReady: !invoicesLoading && !settingsLoading && !invoicesLoadError && !issuersLoadError,
     setFormResetKey,
     setDraft,
     setRecordId,

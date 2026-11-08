@@ -165,7 +165,6 @@ export default function Companies() {
           <Button
             className={styles.addCompanyButton}
             type="button"
-            variant="success"
             size="sm"
             leadingIcon={<Plus size={17} />}
             disabled={editingId !== null || isLoading || Boolean(loadError)}
