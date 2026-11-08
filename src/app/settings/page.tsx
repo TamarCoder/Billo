@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { OrganizationSettingsForm } from "@/components/OrganizationSettingsForm/OrganizationSettingsForm";
 import { useOrganizationSettings } from "@/hooks/api/useOrganizationSettings";
 import { useSettingsMutation } from "@/hooks/api/useSettingsMutation";
@@ -21,8 +21,10 @@ export default function Settings() {
     isSaved,
     setIsSaved,
   } = useSettingsPageState();
+  const isFilledRef = useRef(false);
   useEffect(() => {
-    if (!loadedSettings) return;
+    if (!loadedSettings || isFilledRef.current) return;
+    isFilledRef.current = true;
     setValues(loadedSettings);
     setSavedValues(loadedSettings);
   }, [loadedSettings, setSavedValues, setValues]);

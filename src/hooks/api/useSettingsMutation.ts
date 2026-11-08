@@ -14,7 +14,7 @@ export function useSettingsMutation() {
 
   const updateSettings = async (values: UpdateOrganizationSettingsRequest) => {
     const settings = await trigger(values);
-    await mutate(API_ENDPOINTS.settings);
+    await Promise.all([mutate(API_ENDPOINTS.settings), mutate(API_ENDPOINTS.issuers)]);
     return settings;
   };
 

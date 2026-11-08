@@ -14,6 +14,7 @@ const requiredFields = {
   reportingDate: "აირჩიეთ საანგარიშო პერიოდის თარიღი.",
   sendingDate: "აირჩიეთ გაგზავნის თარიღი.",
   amount: "თანხა სავალდებულოა.",
+  invoiceNumber: "ინვოისის ნომერი სავალდებულოა.",
 } satisfies Partial<Record<keyof InvoiceDraft, string>>;
 
 function isValidDate(value: string) {
@@ -22,7 +23,16 @@ function isValidDate(value: string) {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-export const invoiceDraftResolver: Resolver<InvoiceDraft> = async (values) => {
+export interface InvoiceDraftContext {
+  companyNames: string[];
+  // The company the invoice already had; it stays valid after a rename or delete.
+  originalIssuerName: string;
+}
+
+export const invoiceDraftResolver: Resolver<InvoiceDraft, InvoiceDraftContext> = async (
+  values,
+  context,
+) => {
   const errors: Partial<Record<keyof InvoiceDraft, FieldError>> = {};
   const setError = (field: keyof InvoiceDraft, message: string) => {
     errors[field] = { type: "validate", message };
@@ -45,10 +55,24 @@ export const invoiceDraftResolver: Resolver<InvoiceDraft> = async (values) => {
   if (values.sendingDate.trim() && !isValidDate(values.sendingDate)) {
     setError("sendingDate", "გაგზავნის თარიღი არასწორია.");
   }
+  // Both parts are required: #<company number>/<month>.
+  if (values.invoiceNumber.trim() && !/^#?[^/\s]+\/[^/\s]+$/u.test(values.invoiceNumber.trim())) {
+    setError("invoiceNumber", "ნომერი შეიყვანეთ ასე: #კომპანიის ნომერი/თვე, მაგ. #01/09.");
+  }
   if (values.amount.trim()) {
     if (parseAmountToMinorUnits(values.amount) === null) {
       setError("amount", "თანხა შეიყვანეთ სწორად, მაქსიმუმ 2 ათწილადი ნიშნით.");
     }
+  }
+
+  // The company must still be in the list; a stale or deleted name is not allowed.
+  if (
+    values.issuerName.trim() &&
+    context &&
+    values.issuerName !== context.originalIssuerName &&
+    !context.companyNames.includes(values.issuerName)
+  ) {
+    setError("issuerName", "ეს კომპანია სიაში არ არის. აირჩიეთ კომპანია სიიდან.");
   }
 
   if (Object.keys(errors).length > 0) {

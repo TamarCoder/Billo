@@ -55,10 +55,12 @@ export function useHistoryData({
     1,
     Math.ceil(filteredRecords.length / itemsPerPage),
   );
+  // A list that shrank elsewhere must not leave the user on an empty page.
+  const page = Math.min(currentPage, totalPages);
   const visibleRecords = filteredRecords.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage,
   );
 
-  return { companies, filteredRecords, totalPages, visibleRecords };
+  return { companies, filteredRecords, page, totalPages, visibleRecords };
 }

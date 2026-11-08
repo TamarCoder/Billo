@@ -58,7 +58,7 @@ export default function History() {
   } = useHistoryPageState();
   useExportHistoryPdf({ pdfRecord, setPdfRecord, setError });
 
-  const { companies, filteredRecords, totalPages, visibleRecords } =
+  const { companies, filteredRecords, page, totalPages, visibleRecords } =
     useHistoryData({
       records,
       registeredCompanies,
@@ -277,7 +277,7 @@ export default function History() {
         {filteredRecords.length > ITEMS_PER_PAGE && (
           <Pagination
             className={styles.pagination}
-            currentPage={currentPage}
+            currentPage={page}
             totalPages={totalPages}
             totalItems={filteredRecords.length}
             onPageChange={setCurrentPage}

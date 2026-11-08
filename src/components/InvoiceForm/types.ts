@@ -4,6 +4,7 @@ import type { InvoiceDraft, Company } from "@/types/invoice";
 export interface InvoiceFormProps {
   initialValues: InvoiceDraft;
   companies: Company[];
+  companiesReady: boolean;
   isSaved: boolean;
   saveError: string;
   pdfError: string;

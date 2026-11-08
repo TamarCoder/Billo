@@ -11,7 +11,7 @@ import { Select } from "@/ui/Select/Select";
 import { amountToGeorgianWords } from "@/lib/georgianAmount";
 import { buildInvoiceNumber } from "@/lib/invoiceNumber";
 import type { InvoiceDraft } from "@/types/invoice";
-import { invoiceDraftResolver } from "./invoiceDraftResolver";
+import { invoiceDraftResolver, type InvoiceDraftContext } from "./invoiceDraftResolver";
 import type { FieldProps, InvoiceFormProps } from "./types";
 import styles from "./InvoiceForm.module.scss";
 
@@ -34,6 +34,7 @@ function Field({ id, label, error, children }: FieldProps) {
 export function InvoiceForm({
   initialValues,
   companies,
+  companiesReady,
   isSaved,
   saveError,
   pdfError,
@@ -49,11 +50,17 @@ export function InvoiceForm({
     control,
     handleSubmit,
     setValue,
-    getValues, // ახალი
+    getValues,
     formState: { errors, isSubmitting },
-  } = useForm<InvoiceDraft>({
+  } = useForm<InvoiceDraft, InvoiceDraftContext>({
     defaultValues: initialValues,
     resolver: invoiceDraftResolver,
+    context: companiesReady
+      ? {
+          companyNames: companies.map((company) => company.name),
+          originalIssuerName: initialValues.issuerName,
+        }
+      : undefined,
     mode: "onBlur",
     reValidateMode: "onChange",
   });
@@ -201,13 +208,17 @@ export function InvoiceForm({
                       errors.issuerName ? "issuer-name-error" : undefined
                     }
                     onChange={(event) => {
-                      const companyName = event.currentTarget.value; // ახალი
+                      const companyName = event.currentTarget.value;
                       field.onChange(event);
                       onDraftChange("issuerName", companyName);
                       applyInvoiceNumber(companyName, getValues("reportingMonth"));
                     }}
                   >
                     <option value="">აირჩიეთ კომპანია</option>
+                    {field.value &&
+                      !companies.some((company) => company.name === field.value) && (
+                        <option value={field.value}>{field.value}</option>
+                      )}
                     {companies
                       .filter((company) => company.name.trim())
                       .map((company) => (

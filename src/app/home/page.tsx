@@ -70,10 +70,9 @@ export default function HomePage() {
         closeDialog();
         return;
       }
-      const created = await issuersApi.create(values);
+      await issuersApi.create(values);
       await refresh();
       closeDialog();
-      navigate(`/invoice/${created.id}`);
     } catch (error) {
       setSaveError(errorText(error, "ორგანიზაციის შენახვა ვერ მოხერხდა."));
     }

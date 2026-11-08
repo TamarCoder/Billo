@@ -27,6 +27,10 @@
 }
 
 .dialog {
+  &:focus {
+    outline: none;
+  }
+
   position: relative;
   display: flex;
   width: min(100%, 420px);

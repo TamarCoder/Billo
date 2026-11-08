@@ -1,4 +1,4 @@
-import { useEffect, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
 import type {
   InvoiceDraft,
@@ -27,25 +27,31 @@ export function useLoadInvoicePage({
   setIsSaved,
   setError,
 }: UseLoadInvoicePageOptions) {
+  // Once an existing invoice is open, a list refresh must not overwrite its issuer.
+  const isEditingRef = useRef(false);
+  const appliedSettingsRef = useRef<OrganizationSettings | null>(null);
+
   useEffect(() => {
     if (!isReady) return;
     try {
       const editId = window.localStorage.getItem(INVOICE_EDIT_ID_KEY);
-      if (!editId) {
-        setDraft((current) => ({ ...current, ...settings }));
-        setFormResetKey((key) => key + 1);
-        return;
-      }
-      const record = records.find((item) => item.id === editId);
-      if (record) {
-        setDraft(() => record.invoice);
-        setFormResetKey((key) => key + 1);
-        setRecordId(record.id);
-        setIsSaved(true);
+      if (editId) {
         window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
-      } else {
+        const record = records.find((item) => item.id === editId);
+        if (record) {
+          isEditingRef.current = true;
+          setDraft(() => record.invoice);
+          setFormResetKey((key) => key + 1);
+          setRecordId(record.id);
+          setIsSaved(true);
+          return;
+        }
         setError("მოსაძებნი ინვოისი ისტორიაში ვერ მოიძებნა.");
       }
+      if (isEditingRef.current || appliedSettingsRef.current === settings) return;
+      appliedSettingsRef.current = settings;
+      setDraft((current) => ({ ...current, ...settings }));
+      setFormResetKey((key) => key + 1);
     } catch (error) {
       setError(
         error instanceof Error

@@ -7,6 +7,8 @@ interface AsideButtonProps {
   icon: ReactNode;
   to?: string;
   className?: string;
+  // Also active on any address that starts with this prefix.
+  activePrefix?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -15,11 +17,14 @@ export function AsideButton({
   icon,
   to,
   className,
+  activePrefix,
   onClick,
 }: AsideButtonProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isActive = to !== undefined && pathname === to;
+  const isActive =
+    (to !== undefined && pathname === to) ||
+    (activePrefix !== undefined && pathname.startsWith(activePrefix));
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     if (to) navigate(to);

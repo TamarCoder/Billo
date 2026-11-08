@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSWRConfig } from "swr";
 import { authApi } from "@/api/auth";
 import { useIssuers } from "@/hooks/api/useIssuers";
-import { clearSession } from "@/lib/session";
+import { clearAccountData } from "@/lib/session";
 import { AsideButton } from "@/ui/AsideButton/AsideButton";
 import { ThemeToggle } from "@/ui/ThemeToggle/ThemeToggle";
 import styles from "./Aside.module.scss";
@@ -19,7 +19,6 @@ const navigationItems = [
 export function Aside() {
   const { mutate } = useSWRConfig();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [refreshError, setRefreshError] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
   const { data: issuers } = useIssuers();
@@ -32,22 +31,16 @@ export function Aside() {
     } catch {
       // The local session is cleared anyway; an expired token needs no server call.
     }
-    clearSession();
+    clearAccountData();
     await mutate(() => true, undefined, { revalidate: false });
     setIsLoggingOut(false);
     navigate("/login", { replace: true });
   };
 
-  const refreshData = async () => {
+  // Full reload: picks up a newly deployed frontend as well as fresh data.
+  const refreshData = () => {
     setIsRefreshing(true);
-    setRefreshError("");
-    try {
-      await mutate((key) => typeof key === "string");
-    } catch {
-      setRefreshError("მონაცემების განახლება ვერ მოხერხდა.");
-    } finally {
-      setIsRefreshing(false);
-    }
+    window.location.reload();
   };
 
   return (
@@ -59,7 +52,7 @@ export function Aside() {
           type="button"
           className={`${styles.refreshButton} ${styles.brandRefresh} ${isRefreshing ? styles.refreshing : ""}`}
           title="განახლება"
-          onClick={() => void refreshData()}
+          onClick={refreshData}
           disabled={isRefreshing}
           aria-busy={isRefreshing}
         >
@@ -73,6 +66,7 @@ export function Aside() {
         <AsideButton
           to={primaryIssuer ? `/invoice/${primaryIssuer.id}` : "/invoice"}
           title="ინვოისის ფორმა"
+          activePrefix="/invoice"
           icon={<FileText size={20} />}
           className={styles.link}
         />
@@ -85,11 +79,6 @@ export function Aside() {
             className={styles.link}
           />
         ))}
-        {refreshError && (
-          <p className={styles.refreshError} role="alert">
-            {refreshError}
-          </p>
-        )}
       </nav>
       <div className={styles.footer}>
         <AsideButton

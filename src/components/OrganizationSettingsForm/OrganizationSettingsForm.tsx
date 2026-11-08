@@ -41,7 +41,7 @@ export function OrganizationSettingsForm({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: values,
     resolver: organizationSettingsResolver,
@@ -185,7 +185,7 @@ export function OrganizationSettingsForm({
           >
             გაუქმება
           </Button>
-          <Button type="submit" variant="success" size="sm">
+          <Button type="submit" variant="success" size="sm" loading={isSubmitting}>
             შენახვა
           </Button>
         </div>

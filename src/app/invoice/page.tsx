@@ -41,6 +41,7 @@ export default function InvoicePage() {
   const {
     data: companies = [],
     error: companiesLoadError,
+    isLoading: companiesLoading,
   } = useCompanies();
   const {
     data: records = [],
@@ -133,7 +134,7 @@ export default function InvoicePage() {
   };
 
   const resetDraft = () => {
-    setDraft(getInitialDraft());
+    setDraft({ ...getInitialDraft(), ...settings });
     setFormResetKey((key) => key + 1);
     setRecordId(null);
     window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
@@ -183,6 +184,10 @@ export default function InvoicePage() {
     }
   };
 
+  // A sent or printed invoice is never changed; saving creates a new version.
+  const openStatus = records.find((record) => record.id === recordId)?.status;
+  const isLockedVersion = openStatus === "sent" || openStatus === "printed";
+
   return (
     <div className={styles.page}>
       <nav className={styles.breadcrumb} aria-label="მდებარეობა">
@@ -191,10 +196,18 @@ export default function InvoicePage() {
         <span aria-current="page">ინვოისის მომზადება</span>
       </nav>
 
+      {isLockedVersion && (
+        <p className={styles.lockedNotice} role="status">
+          ეს ინვოისი {openStatus === "sent" ? "გაგზავნილია" : "დაბეჭდილია"} და აღარ შეიცვლება.
+          შენახვისას შეიქმნება ახალი ვერსია.
+        </p>
+      )}
+
       <InvoiceForm
         key={formResetKey}
         initialValues={draft}
         companies={companies}
+        companiesReady={!companiesLoading && !companiesLoadError}
         isSaved={isSaved}
         saveError={
           companiesLoadError

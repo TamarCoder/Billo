@@ -1,3 +1,5 @@
+import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
+
 const STORAGE_KEY = "billo-session";
 
 export const SESSION_REQUIRED_EVENT = "billo:session-required";
@@ -32,8 +34,18 @@ export function clearSession(): void {
   }
 }
 
+// Session plus per-account data kept on this device.
+export function clearAccountData(): void {
+  clearSession();
+  try {
+    window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
+  } catch {
+    // Storage can be unavailable; nothing to clear.
+  }
+}
+
 export function requireSession(): void {
   if (typeof window === "undefined") return;
-  clearSession();
+  clearAccountData();
   window.dispatchEvent(new Event(SESSION_REQUIRED_EVENT));
 }

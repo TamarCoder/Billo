@@ -16,6 +16,9 @@ import { pathToFileURL } from "node:url";
 const isDev = !app.isPackaged;
 const DEV_URL = "http://localhost:3000";
 const APP_SCHEME = "app";
+// Packaged app loads the live frontend so updates arrive on reload; the bundled copy is the offline fallback.
+const REMOTE_URL = "https://billo-three.vercel.app";
+const LOCAL_URL = `${APP_SCHEME}://-/`;
 const OUT_DIR = path.join(__dirname, "..", "out");
 const ICON_PATH = app.isPackaged
   ? path.join(app.getAppPath(), "out", "icon.png")
@@ -24,14 +27,16 @@ const ICON_PATH = app.isPackaged
 // Saved login, encrypted with the OS keychain (safeStorage); never readable as plain text on disk.
 const savedLoginPath = () => path.join(app.getPath("userData"), "saved-login.bin");
 
+function isAppUrl(raw: string): boolean {
+  const url = new URL(raw);
+  if (isDev) return url.origin === DEV_URL;
+  return url.origin === REMOTE_URL || (url.protocol === `${APP_SCHEME}:` && url.host === "-");
+}
+
 function isAppWindowSender(event: IpcMainInvokeEvent): boolean {
   const frame = event.senderFrame;
   if (!frame || frame !== event.sender.mainFrame) return false;
-  const url = new URL(frame.url);
-  return (
-    (isDev && url.origin === DEV_URL) ||
-    (!isDev && url.protocol === `${APP_SCHEME}:` && url.host === "-")
-  );
+  return isAppUrl(frame.url);
 }
 
 function registerSavedLoginHandlers() {
@@ -127,15 +132,14 @@ function createWindow(): void {
 
   // The app window may only show our own pages.
   win.webContents.on("will-navigate", (event, url) => {
-    const allowed = isDev ? url.startsWith(DEV_URL) : url.startsWith(`${APP_SCHEME}://`);
-    if (!allowed) event.preventDefault();
+    if (!isAppUrl(url)) event.preventDefault();
   });
 
   if (isDev) {
     void win.loadURL(DEV_URL);
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    void win.loadURL(`${APP_SCHEME}://-/`);
+    win.loadURL(REMOTE_URL).catch(() => win.loadURL(LOCAL_URL));
   }
 }
 
@@ -154,18 +158,8 @@ if (!app.requestSingleInstanceLock()) {
     ipcMain.handle("app:get-version", () => app.getVersion());
     registerSavedLoginHandlers();
     ipcMain.handle("invoice:export-pdf", async (event) => {
-      const senderFrame = event.senderFrame;
-      if (!senderFrame || senderFrame !== event.sender.mainFrame) {
-        throw new Error("Invoice PDF export is only available to the app window.");
-      }
-
-      const senderUrl = new URL(senderFrame.url);
-      const isAllowedSender =
-        (isDev && senderUrl.origin === DEV_URL) ||
-        (!isDev && senderUrl.protocol === `${APP_SCHEME}:` && senderUrl.host === "-");
       const window = BrowserWindow.fromWebContents(event.sender);
-
-      if (!window || !isAllowedSender) {
+      if (!window || !isAppWindowSender(event)) {
         throw new Error("Invoice PDF export is only available to the app window.");
       }
 

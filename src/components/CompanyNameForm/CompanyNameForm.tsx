@@ -11,12 +11,13 @@ export function CompanyNameForm({
   onNameChange,
   onSubmit,
   onCancel,
+  disabled = false,
 }: CompanyNameFormProps) {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedNumber = number.trim();
     const trimmedName = name.trim();
-    if (trimmedNumber && trimmedName) onSubmit(trimmedNumber, trimmedName);
+    if (!disabled && trimmedNumber && trimmedName) onSubmit(trimmedNumber, trimmedName);
   };
 
   return (
@@ -43,6 +44,7 @@ export function CompanyNameForm({
         type="submit"
         className={`${styles.iconButton} ${styles.saveButton}`}
         aria-label="კომპანიის შენახვა"
+        disabled={disabled}
       >
         <Check size={17} />
       </button>

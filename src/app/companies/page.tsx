@@ -60,9 +60,10 @@ export default function Companies() {
     1,
     Math.ceil(filteredCompanies.length / ITEMS_PER_PAGE),
   );
+  const page = Math.min(currentPage, totalPages);
   const visibleCompanies = filteredCompanies.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE,
   );
 
   const resetEditing = () => {
@@ -83,18 +84,24 @@ export default function Companies() {
     setStorageError("");
   };
 
+  // One row at a time: opening another row would silently drop unsaved changes.
   const startEditing = (company: Company) => {
+    if (editingId) return;
     setEditingId(company.id);
     setNumberDraft(company.number ?? "");
     setNameDraft(company.name);
     setIsCreating(false);
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const saveCompany = async (
     companyId: string,
     number: string,
     name: string,
   ) => {
+    if (isSaving) return;
+    setIsSaving(true);
     try {
       if (isCreating) {
         await createCompany({ number, name });
@@ -107,6 +114,8 @@ export default function Companies() {
         error instanceof Error ? error.message : "კომპანიის შენახვა ვერ მოხერხდა.",
       );
       return;
+    } finally {
+      setIsSaving(false);
     }
     setStorageError("");
     resetEditing();
@@ -204,6 +213,7 @@ export default function Companies() {
                   saveCompany(NEW_COMPANY_ID, number, name)
                 }
                 onCancel={resetEditing}
+                disabled={isMutating || isSaving}
               />
             </article>
           )}
@@ -225,6 +235,7 @@ export default function Companies() {
                       saveCompany(company.id, number, name)
                     }
                     onCancel={resetEditing}
+                    disabled={isMutating || isSaving}
                   />
                 ) : (
                   <>
@@ -235,7 +246,7 @@ export default function Companies() {
                         type="button"
                         className={styles.iconButton}
                         aria-label={`${company.name} რედაქტირება`}
-                        disabled={isMutating}
+                        disabled={isMutating || editingId !== null}
                         onClick={() => startEditing(company)}
                       >
                         <Pencil size={16} />
@@ -271,7 +282,7 @@ export default function Companies() {
         {filteredCompanies.length > ITEMS_PER_PAGE && (
           <Pagination
             className={styles.pagination}
-            currentPage={currentPage}
+            currentPage={page}
             totalPages={totalPages}
             totalItems={filteredCompanies.length}
             onPageChange={setCurrentPage}

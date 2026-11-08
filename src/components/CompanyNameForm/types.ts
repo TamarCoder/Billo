@@ -5,4 +5,5 @@ export interface CompanyNameFormProps {
   onNameChange: (name: string) => void;
   onSubmit: (number: string, name: string) => void;
   onCancel: () => void;
+  disabled?: boolean;
 }

@@ -66,7 +66,8 @@ export function InvoiceDocument({
             <td className={styles.referenceCell} rowSpan={2}>
               <strong>
                 ანგარიშ-ფაქტურა
-                <br /># {invoiceNumber}
+                <br />
+                {invoiceNumber.startsWith("#") ? invoiceNumber : `#${invoiceNumber}`}
               </strong>
               <span>{reportingDate} წელი</span>
             </td>
