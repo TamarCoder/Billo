@@ -1,5 +1,15 @@
-import { writeFile } from "node:fs/promises";
-import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell } from "electron";
+import { readFile, rm, writeFile } from "node:fs/promises";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  net,
+  protocol,
+  safeStorage,
+  shell,
+  type IpcMainInvokeEvent,
+} from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -11,6 +21,53 @@ const ICON_PATH = app.isPackaged
   ? path.join(app.getAppPath(), "out", "icon.png")
   : path.join(app.getAppPath(), "public", "icon.png");
 
+// Saved login, encrypted with the OS keychain (safeStorage); never readable as plain text on disk.
+const savedLoginPath = () => path.join(app.getPath("userData"), "saved-login.bin");
+
+function isAppWindowSender(event: IpcMainInvokeEvent): boolean {
+  const frame = event.senderFrame;
+  if (!frame || frame !== event.sender.mainFrame) return false;
+  const url = new URL(frame.url);
+  return (
+    (isDev && url.origin === DEV_URL) ||
+    (!isDev && url.protocol === `${APP_SCHEME}:` && url.host === "-")
+  );
+}
+
+function registerSavedLoginHandlers() {
+  ipcMain.handle("login:save", async (event, code: unknown, password: unknown) => {
+    if (!isAppWindowSender(event)) throw new Error("Not allowed.");
+    if (typeof code !== "string" || typeof password !== "string") throw new Error("Invalid login.");
+    if (!safeStorage.isEncryptionAvailable()) return { saved: false };
+    const encrypted = safeStorage.encryptString(JSON.stringify({ code, password }));
+    await writeFile(savedLoginPath(), encrypted, { mode: 0o600 });
+    return { saved: true };
+  });
+
+  ipcMain.handle("login:load", async (event) => {
+    if (!isAppWindowSender(event)) throw new Error("Not allowed.");
+    try {
+      const encrypted = await readFile(savedLoginPath());
+      const login = JSON.parse(safeStorage.decryptString(encrypted)) as unknown;
+      if (
+        typeof login === "object" && login !== null &&
+        "code" in login && typeof login.code === "string" &&
+        "password" in login && typeof login.password === "string"
+      ) {
+        return { code: login.code, password: login.password };
+      }
+    } catch {
+      // No saved login, or it can no longer be decrypted.
+    }
+    return null;
+  });
+
+  ipcMain.handle("login:clear", async (event) => {
+    if (!isAppWindowSender(event)) throw new Error("Not allowed.");
+    await rm(savedLoginPath(), { force: true });
+  });
+}
+
 // Must run before the app is ready.
 protocol.registerSchemesAsPrivileged([
   {
@@ -19,7 +76,6 @@ protocol.registerSchemesAsPrivileged([
   },
 ]);
 
-// Serve the Vite single-page app from ./out with app://-/...
 function registerAppProtocol(): void {
   protocol.handle(APP_SCHEME, (request) => {
     const { pathname } = new URL(request.url);
@@ -83,7 +139,6 @@ function createWindow(): void {
   }
 }
 
-// Only one copy of the app may run.
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
@@ -97,6 +152,7 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(() => {
     ipcMain.handle("app:get-version", () => app.getVersion());
+    registerSavedLoginHandlers();
     ipcMain.handle("invoice:export-pdf", async (event) => {
       const senderFrame = event.senderFrame;
       if (!senderFrame || senderFrame !== event.sender.mainFrame) {

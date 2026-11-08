@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import type { InsuranceCompany, InvoiceRecord } from "@/types/invoice";
+import type { Company, InvoiceRecord } from "@/types/invoice";
 
 interface UseHistoryDataOptions {
   records: InvoiceRecord[];
-  registeredCompanies: InsuranceCompany[];
+  registeredCompanies: Company[];
   search: string;
   reportingMonth: string;
   date: string;

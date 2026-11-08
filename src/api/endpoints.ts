@@ -6,4 +6,10 @@ export const API_ENDPOINTS = {
   invoiceStatus: (id: string) =>
     `/api/invoices/${encodeURIComponent(id)}/status`,
   settings: "/api/settings",
+  issuers: "/api/issuers",
+  issuer: (id: string) => `/api/issuers/${encodeURIComponent(id)}`,
+  authRegister: "/api/auth/register",
+  authLogin: "/api/auth/login",
+  authLogout: "/api/auth/logout",
+  authMe: "/api/auth/me",
 } as const;

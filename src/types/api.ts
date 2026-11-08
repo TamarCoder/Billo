@@ -1,5 +1,5 @@
 import type {
-  InsuranceCompany,
+  Company,
   InvoiceDraft,
   InvoiceRecord,
   InvoiceStatus,
@@ -12,12 +12,12 @@ export interface ApiErrorResponse {
   details?: unknown;
 }
 
-export type CreateInsuranceCompanyRequest = Pick<
-  InsuranceCompany,
+export type CreateCompanyRequest = Pick<
+  Company,
   "number" | "name"
 >;
-export type UpdateInsuranceCompanyRequest = Pick<
-  InsuranceCompany,
+export type UpdateCompanyRequest = Pick<
+  Company,
   "number" | "name"
 >;
 
@@ -29,8 +29,14 @@ export interface UpdateInvoiceStatusRequest {
 
 export type UpdateOrganizationSettingsRequest = OrganizationSettings;
 
-export type CompanyListResponse = InsuranceCompany[];
+export type CompanyListResponse = Company[];
 export type InvoiceListResponse = InvoiceRecord[];
-export type CompanyResponse = InsuranceCompany;
+export type CompanyResponse = Company;
 export type InvoiceResponse = InvoiceRecord;
 export type OrganizationSettingsResponse = OrganizationSettings;
+
+// An organization the account issues invoices as; the primary one is the account itself.
+export interface Issuer extends OrganizationSettings {
+  id: string;
+  isPrimary: boolean;
+}

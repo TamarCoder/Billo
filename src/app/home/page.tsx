@@ -1,232 +1,192 @@
-import { useState } from "react";
-import { InvoiceDocument } from "@/components/InvoiceDocument/InvoiceDocument";
-import { InvoiceForm } from "@/components/InvoiceForm/InvoiceForm";
-import { useInvoicePageState } from "@/hooks/useInvoicePageState";
-import { useLoadInvoicePage } from "@/hooks/useLoadInvoicePage";
-import { useCompanies } from "@/hooks/api/useCompanies";
-import { useInvoices } from "@/hooks/api/useInvoices";
-import { useOrganizationSettings } from "@/hooks/api/useOrganizationSettings";
-import { useInvoiceMutations } from "@/hooks/api/useInvoiceMutations";
-import { formatGeorgianMonthYear } from "@/lib/georgianMonth";
-import {
-  DEFAULT_ORGANIZATION_SETTINGS,
-  INVOICE_EDIT_ID_KEY,
-} from "@/lib/invoiceStorage";
-import type { InvoiceDraft } from "@/types/invoice";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useSWRConfig } from "swr";
+import { API_ENDPOINTS } from "@/api/endpoints";
+import { issuersApi } from "@/api/issuers";
+import { ConfirmDelete } from "@/components/ConfirmDelete/ConfirmDelete";
+import { Card } from "@/components/Card/Card";
+import { OrganizationSettingsForm } from "@/components/OrganizationSettingsForm/OrganizationSettingsForm";
+import { useIssuers } from "@/hooks/api/useIssuers";
+import { EMPTY_ORGANIZATION_SETTINGS } from "@/lib/invoiceStorage";
+import type { Issuer } from "@/types/api";
+import type { OrganizationSettings } from "@/types/invoice";
+import { Modal } from "@/ui/Modal/Modal";
 import styles from "./page.module.scss";
 
-function formatInvoiceDate(value: string) {
-  const [year, month, day] = value.split("-");
-  return year && month && day ? `${day}.${month}.${year}` : value;
-}
+type Dialog =
+  | { kind: "add" }
+  | { kind: "edit"; issuer: Issuer }
+  | { kind: "delete"; issuer: Issuer }
+  | null;
 
-function getInitialDraft(): InvoiceDraft {
-  const today = new Date();
-  const reportingDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+function toSettings(issuer: Issuer): OrganizationSettings {
   return {
-    ...DEFAULT_ORGANIZATION_SETTINGS,
-    invoiceNumber: "",
-    reportingDate: `${reportingDate.getFullYear()}-${String(
-      reportingDate.getMonth() + 1,
-    ).padStart(2, "0")}-${String(reportingDate.getDate()).padStart(2, "0")}`,
-    sendingDate: `${today.getFullYear()}-${String(
-      today.getMonth() + 1,
-    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
-    amount: "",
-    amountInWords: "",
-    reportingMonth: `${today.getFullYear()}-${String(
-      today.getMonth() + 1,
-    ).padStart(2, "0")}`,
-    reportingDescription: "სამედიცინო მომსახურეობა, ამბულატორია",
-    issuerName: "",
+    title: issuer.title,
+    issuerAddress: issuer.issuerAddress,
+    issuerIdentificationNumber: issuer.issuerIdentificationNumber,
+    bankName: issuer.bankName,
+    bankCode: issuer.bankCode,
+    bankAccount: issuer.bankAccount,
   };
 }
 
-export default function Home() {
-  const {
-    data: companies = [],
-    error: companiesLoadError,
-  } = useCompanies();
-  const {
-    data: records = [],
-    error: invoicesLoadError,
-    isLoading: invoicesLoading,
-  } = useInvoices();
-  const {
-    data: settings = DEFAULT_ORGANIZATION_SETTINGS,
-    error: settingsLoadError,
-    isLoading: settingsLoading,
-  } = useOrganizationSettings();
-  const { createInvoice, updateInvoice, changeInvoiceStatus } =
-    useInvoiceMutations();
-  const [formResetKey, setFormResetKey] = useState(0);
-  const {
-    draft,
-    setDraft,
-    isSaved,
-    setIsSaved,
-    recordId,
-    setRecordId,
-    saveError,
-    setSaveError,
-    pdfError,
-    setPdfError,
-    pdfSaved,
-    setPdfSaved,
-  } = useInvoicePageState(getInitialDraft);
-  useLoadInvoicePage({
-    records,
-    settings,
-    isReady: !invoicesLoading && !settingsLoading && !invoicesLoadError && !settingsLoadError,
-    setFormResetKey,
-    setDraft,
-    setRecordId,
-    setIsSaved,
-    setError: setSaveError,
-  });
+const errorText = (error: unknown, fallback: string) =>
+  error instanceof Error ? error.message : fallback;
 
-  const updateDraft = <Field extends keyof InvoiceDraft>(
-    field: Field,
-    value: InvoiceDraft[Field],
-  ) => {
-    setDraft((current) => ({ ...current, [field]: value }));
-    setIsSaved(false);
-    setSaveError("");
-    setPdfError("");
-    setPdfSaved(false);
-  };
+export default function HomePage() {
+  const navigate = useNavigate();
+  const { mutate } = useSWRConfig();
+  const { data: issuers, error: loadError, isLoading } = useIssuers();
+  const [dialog, setDialog] = useState<Dialog>(null);
+  const [saveError, setSaveError] = useState("");
+  const addFormRef = useRef<HTMLDivElement>(null);
 
-  const saveDraft = async (values: InvoiceDraft) => {
-    setSaveError("");
-    try {
-      setDraft(values);
-      const savedRecord = recordId
-        ? await updateInvoice(recordId, values)
-        : await createInvoice(values);
-      setRecordId(savedRecord.id);
-      window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
-      setIsSaved(true);
-      setSaveError("");
-      setPdfError("");
-      setPdfSaved(false);
-    } catch (error) {
-      setIsSaved(false);
-      setSaveError(
-        error instanceof Error
-          ? error.message
-          : "ინვოისის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.",
-      );
+  useEffect(() => {
+    if (dialog?.kind === "add") {
+      addFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  };
+  }, [dialog]);
 
-  const resetDraft = () => {
-    setDraft(getInitialDraft());
-    setFormResetKey((key) => key + 1);
-    setRecordId(null);
-    window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
-    setIsSaved(false);
+  const formValues = useMemo(
+    () => (dialog?.kind === "edit" ? toSettings(dialog.issuer) : EMPTY_ORGANIZATION_SETTINGS),
+    [dialog],
+  );
+
+  const closeDialog = () => {
+    setDialog(null);
     setSaveError("");
-    setPdfError("");
-    setPdfSaved(false);
   };
 
-  const markAsPrinted = async () => {
-    if (!recordId) return;
-    await changeInvoiceStatus(recordId, { status: "printed" });
-  };
+  const refresh = () =>
+    Promise.all([mutate(API_ENDPOINTS.issuers), mutate(API_ENDPOINTS.settings)]);
 
-  const exportPdf = async () => {
-    setPdfError("");
-    setPdfSaved(false);
+  const saveIssuer = async (values: OrganizationSettings) => {
+    setSaveError("");
     try {
-      if (!window.electron) {
-        window.print();
-        await markAsPrinted();
+      if (dialog?.kind === "edit") {
+        await issuersApi.update(dialog.issuer.id, values);
+        await refresh();
+        closeDialog();
         return;
       }
-
-      const result = await window.electron.exportInvoicePdf();
-      setPdfSaved(result.status === "saved");
-      if (result.status === "saved") await markAsPrinted();
+      const created = await issuersApi.create(values);
+      await refresh();
+      closeDialog();
+      navigate(`/invoice/${created.id}`);
     } catch (error) {
-      setPdfError(
-        error instanceof Error
-          ? error.message
-          : "PDF-ის ექსპორტი ვერ მოხერხდა. სცადეთ ხელახლა.",
-      );
-    }
-  };
-
-  const printInvoice = async () => {
-    window.print();
-    try {
-      await markAsPrinted();
-    } catch (error) {
-      setSaveError(
-        error instanceof Error
-          ? error.message
-          : "ინვოისის სტატუსის განახლება ვერ მოხერხდა.",
-      );
+      setSaveError(errorText(error, "ორგანიზაციის შენახვა ვერ მოხერხდა."));
     }
   };
 
   return (
-    <div className={styles.page}>
+    <main className={styles.page}>
       <nav className={styles.breadcrumb} aria-label="მდებარეობა">
         <span>მთავარი</span>
         <span aria-hidden="true">/</span>
-        <span>ინვოისის მომზადება</span>
+        <span aria-current="page">ორგანიზაციები</span>
       </nav>
 
-      <InvoiceForm
-        key={formResetKey}
-        initialValues={draft}
-        companies={companies}
-        isSaved={isSaved}
-        saveError={
-          companiesLoadError
-            ? companiesLoadError instanceof Error
-              ? companiesLoadError.message
-              : "სადაზღვევო კომპანიების ჩატვირთვა ვერ მოხერხდა."
-            : invoicesLoadError
-              ? invoicesLoadError instanceof Error
-                ? invoicesLoadError.message
-                : "ინვოისების ჩატვირთვა ვერ მოხერხდა."
-              : settingsLoadError
-                ? settingsLoadError instanceof Error
-                  ? settingsLoadError.message
-                  : "ორგანიზაციის პარამეტრების ჩატვირთვა ვერ მოხერხდა."
-                : saveError
-        }
-        pdfError={pdfError}
-        pdfSaved={pdfSaved}
-        onDraftChange={updateDraft}
-        onSubmit={saveDraft}
-        onReset={resetDraft}
-        onPrint={printInvoice}
-        onExportPdf={exportPdf}
-      />
-
-      {isSaved && (
-        <section className={styles.invoicePreview} aria-label="ინვოისის გადახედვა">
-          <InvoiceDocument
-            organization={draft.title}
-            invoiceNumber={draft.invoiceNumber}
-            reportingDate={formatInvoiceDate(draft.reportingDate)}
-            sendingDate={formatInvoiceDate(draft.sendingDate)}
-            address={draft.issuerAddress}
-            identificationNumber={draft.issuerIdentificationNumber}
-            bankName={draft.bankName}
-            bankCode={draft.bankCode}
-            bankAccount={draft.bankAccount}
-            companyName={draft.issuerName}
-            reportingMonth={formatGeorgianMonthYear(draft.reportingMonth)}
-            serviceDescription={draft.reportingDescription}
-            amount={draft.amount}
-            amountInWords={draft.amountInWords}
-          />
-        </section>
+      {isLoading && <p className={styles.status} role="status">იტვირთება…</p>}
+      {loadError && (
+        <p className={styles.error} role="alert">
+          ორგანიზაციების ჩატვირთვა ვერ მოხერხდა.
+        </p>
       )}
-    </div>
+
+      <section className={styles.grid} aria-label="ორგანიზაციების სია">
+        {issuers?.map((issuer) => (
+          <article key={issuer.id} className={styles.card}>
+            <button
+              type="button"
+              className={styles.cardOpen}
+              onClick={() => navigate(`/invoice/${issuer.id}`)}
+            >
+              <span className={styles.cardTitle}>{issuer.title || "უსახელო ორგანიზაცია"}</span>
+              <span className={styles.cardCode}>{issuer.issuerIdentificationNumber}</span>
+            </button>
+            <div className={styles.cardActions}>
+              <button
+                type="button"
+                className={styles.iconButton}
+                aria-label={`${issuer.title} — რედაქტირება`}
+                title="რედაქტირება"
+                onClick={() => setDialog({ kind: "edit", issuer })}
+              >
+                <Pencil size={16} />
+              </button>
+              {!issuer.isPrimary && (
+                <button
+                  type="button"
+                  className={`${styles.iconButton} ${styles.danger}`}
+                  aria-label={`${issuer.title} — წაშლა`}
+                  title="წაშლა"
+                  onClick={() => setDialog({ kind: "delete", issuer })}
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+          </article>
+        ))}
+
+        <button type="button" className={styles.addCard} onClick={() => setDialog({ kind: "add" })}>
+          <span className={styles.addIcon} aria-hidden="true">
+            <Plus size={18} />
+          </span>
+          <span>ახალი ორგანიზაციის დამატება</span>
+        </button>
+      </section>
+
+      {dialog?.kind === "add" && (
+        <div ref={addFormRef}>
+          <Card
+            padding="lg"
+            heading="ახალი ორგანიზაცია"
+          >
+            <OrganizationSettingsForm
+              values={EMPTY_ORGANIZATION_SETTINGS}
+              error={saveError}
+              isSaved={false}
+              onEdit={() => setSaveError("")}
+              onSubmit={saveIssuer}
+              onCancel={closeDialog}
+              variant="plain"
+            />
+          </Card>
+        </div>
+      )}
+
+      {dialog?.kind === "edit" && (
+        <Modal
+          backdrop="dim"
+          size="lg"
+          title="ორგანიზაციის რედაქტირება"
+          description="შეავსე ორგანიზაციის მონაცემები. ისინი ინვოისზე გამომწერად ჩაიწერება."
+          onClose={closeDialog}
+        >
+          <OrganizationSettingsForm
+            values={formValues}
+            error={saveError}
+            isSaved={false}
+            onEdit={() => setSaveError("")}
+            onSubmit={saveIssuer}
+            onCancel={closeDialog}
+            variant="plain"
+          />
+        </Modal>
+      )}
+
+      {dialog?.kind === "delete" && (
+        <ConfirmDelete
+          itemName={dialog.issuer.title || "უსახელო ორგანიზაცია"}
+          onConfirm={async () => {
+            await issuersApi.remove(dialog.issuer.id);
+            await refresh();
+          }}
+          onClose={closeDialog}
+        />
+      )}
+    </main>
   );
 }

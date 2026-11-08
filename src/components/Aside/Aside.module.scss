@@ -28,6 +28,18 @@
   letter-spacing: $tracking-tighter;
 }
 
+.brand .brandRefresh {
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0;
+
+  > span {
+    @include visually-hidden;
+  }
+}
+
 .brand img {
   width: 32px;
   height: 32px;
@@ -88,8 +100,36 @@
   font-size: $text-sm;
 }
 
-.themeToggle {
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: $space-2;
   margin-top: auto;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+}
+
+// Scoped under .footer so it wins over the shared button styles.
+.footer .footerButton {
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+
+  > span:not([aria-hidden="true"]) {
+    @include visually-hidden;
+  }
+}
+
+.logoutButton {
+  @extend .refreshButton;
+  color: $color-danger;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, $color-danger 12%, transparent);
+    color: $color-danger-hover;
+  }
 }
 
 @keyframes refresh-spin {
@@ -119,7 +159,13 @@
     gap: $space-2;
   }
 
-  .themeToggle {
+  .footer {
+    flex-direction: row;
+    align-items: center;
     margin-top: 0;
+    padding-top: 0;
+    padding-left: $space-3;
+    border-top: 0;
+    border-left: 1px solid $color-border;
   }
 }

@@ -1,0 +1,26 @@
+@use "abstracts/colors" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/typography" as *;
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  color: $color-text;
+  font-size: $text-sm;
+  cursor: pointer;
+  user-select: none;
+}
+
+.input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: $color-primary;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}

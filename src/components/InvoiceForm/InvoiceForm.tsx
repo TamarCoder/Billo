@@ -9,7 +9,7 @@ import { Button } from "@/ui/Button/Button";
 import { Input } from "@/ui/Input/Input";
 import { Select } from "@/ui/Select/Select";
 import { amountToGeorgianWords } from "@/lib/georgianAmount";
-import { buildInvoiceNumber } from "@/lib/invoiceNumber"; // ახალი
+import { buildInvoiceNumber } from "@/lib/invoiceNumber";
 import type { InvoiceDraft } from "@/types/invoice";
 import { invoiceDraftResolver } from "./invoiceDraftResolver";
 import type { FieldProps, InvoiceFormProps } from "./types";
@@ -72,12 +72,9 @@ export function InvoiceForm({
       },
     });
 
-  // ახალი: ინვოისის ნომერი = თვე/კომპანიის ნომერი (მაგ. 09/01)
   const applyInvoiceNumber = (companyName: string, month: string) => {
     const company = companies.find((item) => item.name === companyName);
-    if (!company) return;
-
-    const invoiceNumber = buildInvoiceNumber(month, company.number);
+    const invoiceNumber = buildInvoiceNumber(month, company?.number);
     setValue("invoiceNumber", invoiceNumber, { shouldDirty: true });
     onDraftChange("invoiceNumber", invoiceNumber);
   };
@@ -207,7 +204,7 @@ export function InvoiceForm({
                       const companyName = event.currentTarget.value; // ახალი
                       field.onChange(event);
                       onDraftChange("issuerName", companyName);
-                      applyInvoiceNumber(companyName, getValues("reportingMonth")); // ახალი
+                      applyInvoiceNumber(companyName, getValues("reportingMonth"));
                     }}
                   >
                     <option value="">აირჩიეთ კომპანია</option>
@@ -246,7 +243,7 @@ export function InvoiceForm({
                       onChange={(value) => {
                         field.onChange(value);
                         onDraftChange("reportingMonth", value);
-                        applyInvoiceNumber(getValues("issuerName"), value); // ახალი
+                        applyInvoiceNumber(getValues("issuerName"), value);
                       }}
                     />
                   </Field>

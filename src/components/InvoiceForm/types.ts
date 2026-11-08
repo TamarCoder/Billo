@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import type { InvoiceDraft, InsuranceCompany } from "@/types/invoice";
+import type { InvoiceDraft, Company } from "@/types/invoice";
 
 export interface InvoiceFormProps {
   initialValues: InvoiceDraft;
-  companies: InsuranceCompany[];
+  companies: Company[];
   isSaved: boolean;
   saveError: string;
   pdfError: string;

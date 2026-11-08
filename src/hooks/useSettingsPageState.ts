@@ -1,15 +1,15 @@
 import { useState } from "react";
 import {
-  DEFAULT_ORGANIZATION_SETTINGS,
+  EMPTY_ORGANIZATION_SETTINGS,
 } from "@/lib/invoiceStorage";
 import type { OrganizationSettings } from "@/types/invoice";
 
 export function useSettingsPageState() {
   const [values, setValues] = useState<OrganizationSettings>(
-    DEFAULT_ORGANIZATION_SETTINGS,
+    EMPTY_ORGANIZATION_SETTINGS,
   );
   const [savedValues, setSavedValues] = useState<OrganizationSettings>(
-    DEFAULT_ORGANIZATION_SETTINGS,
+    EMPTY_ORGANIZATION_SETTINGS,
   );
   const [error, setError] = useState("");
   const [isSaved, setIsSaved] = useState(false);

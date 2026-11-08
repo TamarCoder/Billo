@@ -160,11 +160,6 @@ export function MonthYearPicker({
             {GEORGIAN_MONTHS.map((month, index) => {
               const monthValue = `${visibleYear}-${String(index + 1).padStart(2, "0")}`;
               const isSelected = monthValue === value;
-              const isCurrent =
-                monthValue ===
-                `${currentMonth.getFullYear()}-${String(
-                  currentMonth.getMonth() + 1,
-                ).padStart(2, "0")}`;
 
               return (
                 <button
@@ -172,14 +167,12 @@ export function MonthYearPicker({
                   className={[
                     styles.month,
                     isSelected && styles.selected,
-                    isCurrent && styles.current,
                   ]
                     .filter(Boolean)
                     .join(" ")}
                   key={monthValue}
                   role="gridcell"
                   aria-pressed={isSelected}
-                  aria-current={isCurrent ? "date" : undefined}
                   onClick={() => selectMonth(index)}
                 >
                   {month}

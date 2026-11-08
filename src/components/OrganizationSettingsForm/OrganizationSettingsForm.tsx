@@ -35,6 +35,7 @@ export function OrganizationSettingsForm({
   onEdit,
   onSubmit,
   onCancel,
+  variant = "card",
 }: OrganizationSettingsFormProps) {
   const {
     register,
@@ -52,20 +53,17 @@ export function OrganizationSettingsForm({
     reset(values);
   }, [reset, values]);
 
-  return (
-    <Card
-      className={styles.settingsCard}
-      padding="md"
-      heading="ორგანიზაციის შესახებ ინფორმაცია"
-    >
+  const form = (
       <form
         className={styles.form}
         onChange={onEdit}
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
-        <fieldset className={styles.formSection}>
-          <legend>ორგანიზაცია</legend>
+        <fieldset
+          className={variant === "plain" ? `${styles.formSection} ${styles.plainSection}` : styles.formSection}
+        >
+          {variant === "card" && <legend>ორგანიზაცია</legend>}
           <Field
             id="organization-title"
             label="ორგანიზაცია"
@@ -192,6 +190,17 @@ export function OrganizationSettingsForm({
           </Button>
         </div>
       </form>
+  );
+
+  if (variant === "plain") return form;
+
+  return (
+    <Card
+      className={styles.settingsCard}
+      padding="md"
+      heading="ორგანიზაციის შესახებ ინფორმაცია"
+    >
+      {form}
     </Card>
   );
 }

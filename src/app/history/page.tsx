@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Plus, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDelete } from "@/components/ConfirmDelete/ConfirmDelete";
 import { Card } from "@/components/Card/Card";
 import { DatePicker } from "@/components/DatePicker/DatePicker";
 import { MonthYearPicker } from "@/components/MonthYearPicker/MonthYearPicker";
@@ -14,6 +16,7 @@ import { useHistoryData } from "@/hooks/useHistoryData";
 import { useHistoryPageState } from "@/hooks/useHistoryPageState";
 import { useExportHistoryPdf } from "@/hooks/useExportHistoryPdf";
 import { INVOICE_EDIT_ID_KEY } from "@/lib/invoiceStorage";
+import { useIssuers } from "@/hooks/api/useIssuers";
 import { formatGeorgianMonthYear } from "@/lib/georgianMonth";
 import { useInvoices } from "@/hooks/api/useInvoices";
 import { useCompanies } from "@/hooks/api/useCompanies";
@@ -30,6 +33,11 @@ function formatDate(value: string) {
 
 export default function History() {
   const navigate = useNavigate();
+  const { data: issuers } = useIssuers();
+  const primaryInvoicePath = (() => {
+    const primary = issuers?.find((issuer) => issuer.isPrimary) ?? issuers?.[0];
+    return primary ? `/invoice/${primary.id}` : "/home";
+  })();
   const { data: records = [], error: loadError } = useInvoices();
   const {
     data: registeredCompanies = [],
@@ -69,10 +77,9 @@ export default function History() {
       itemsPerPage: ITEMS_PER_PAGE,
     });
 
+  const [recordToDelete, setRecordToDelete] = useState<InvoiceRecord | null>(null);
+
   const removeRecord = async (record: InvoiceRecord) => {
-    if (!window.confirm(`წაიშალოს ინვოისი № ${record.invoice.invoiceNumber}?`)) {
-      return;
-    }
     try {
       await removeInvoice(record.id);
       setCurrentPage((page) =>
@@ -94,7 +101,7 @@ export default function History() {
   const editRecord = (record: InvoiceRecord) => {
     try {
       window.localStorage.setItem(INVOICE_EDIT_ID_KEY, record.id);
-      navigate("/home");
+      navigate(primaryInvoicePath);
     } catch {
       setError("ინვოისის გასახსნელად მომზადება ვერ მოხერხდა.");
     }
@@ -104,7 +111,7 @@ export default function History() {
     <main className={styles.page}>
       <nav className={styles.breadcrumb} aria-label="მდებარეობა">
         <div className={styles.breadcrumbPath}>
-          <span>მთავარი</span>
+          <span>ისტორია</span>
           <span aria-hidden="true">/</span>
           <span aria-current="page">ინვოისების ისტორია</span>
         </div>
@@ -116,7 +123,7 @@ export default function History() {
               size="sm"
               type="search"
               aria-label="ინვოისის ძებნა"
-              placeholder="ძებნა ნომრით ან სადაზღვევოთი..."
+              placeholder="ძებნა ნომრით ან კომპანიით..."
               value={search}
               onChange={(event) => {
                 setSearch(event.currentTarget.value);
@@ -127,7 +134,7 @@ export default function History() {
           <Button
             size="sm"
             leadingIcon={<Plus size={16} />}
-            onClick={() => navigate("/home")}
+            onClick={() => navigate(primaryInvoicePath)}
           >
             ახალი ინვოისი
           </Button>
@@ -198,10 +205,10 @@ export default function History() {
             </div>
           </div>
           <div className={`${styles.filter} ${styles.companyFilter}`}>
-            <span>სადაზღვევო</span>
+            <span>კომპანია</span>
             <Dropdown
               className={styles.filterSelect}
-              aria-label="სადაზღვევო კომპანიის მიხედვით გაფილტვრა"
+              aria-label="კომპანიის მიხედვით გაფილტვრა"
               options={[
                 { value: "", label: "ყველა" },
                 ...companies.map((item) => ({ value: item, label: item })),
@@ -247,7 +254,7 @@ export default function History() {
               : companiesLoadError instanceof Error
                 ? companiesLoadError.message
                 : companiesLoadError
-                  ? "სადაზღვევო კომპანიების ჩატვირთვა ვერ მოხერხდა."
+                  ? "კომპანიების ჩატვირთვა ვერ მოხერხდა."
                   : "")) && (
           <p className={styles.error} role="alert">
             {error ||
@@ -257,7 +264,7 @@ export default function History() {
                   ? "ინვოისების ჩატვირთვა ვერ მოხერხდა."
                   : companiesLoadError instanceof Error
                     ? companiesLoadError.message
-                    : "სადაზღვევო კომპანიების ჩატვირთვა ვერ მოხერხდა.")}
+                    : "კომპანიების ჩატვირთვა ვერ მოხერხდა.")}
           </p>
         )}
 
@@ -265,7 +272,7 @@ export default function History() {
           records={visibleRecords}
           onEdit={editRecord}
           onExportPdf={setPdfRecord}
-          onDelete={removeRecord}
+          onDelete={setRecordToDelete}
           emptyMessage={
             records.length === 0
               ? "შენახული ინვოისები ჯერ არ არის."
@@ -305,6 +312,14 @@ export default function History() {
             amountInWords={pdfRecord.invoice.amountInWords}
           />
         </div>
+      )}
+
+      {recordToDelete && (
+        <ConfirmDelete
+          itemName={`ინვოისი ${recordToDelete.invoice.invoiceNumber}`}
+          onConfirm={() => removeRecord(recordToDelete)}
+          onClose={() => setRecordToDelete(null)}
+        />
       )}
     </main>
   );

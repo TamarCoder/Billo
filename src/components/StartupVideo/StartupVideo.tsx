@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getSessionToken } from "@/lib/session";
 import styles from "./StartupVideo.module.scss";
 
 export function StartupVideo() {
   const navigate = useNavigate();
   const [hasError, setHasError] = useState(false);
+  const enterApp = () =>
+    navigate(getSessionToken() ? "/home" : "/login", { replace: true });
 
   if (hasError) {
     return (
@@ -15,7 +18,7 @@ export function StartupVideo() {
         <button
           className={styles.continueButton}
           type="button"
-          onClick={() => navigate("/home", { replace: true })}
+          onClick={() => enterApp()}
         >
           აპლიკაციაში გადასვლა
         </button>
@@ -31,7 +34,7 @@ export function StartupVideo() {
         muted
         playsInline
         preload="auto"
-        onEnded={() => navigate("/home", { replace: true })}
+        onEnded={() => enterApp()}
         onError={() => setHasError(true)}
       >
         <source src="/intro.mp4" type="video/mp4" />

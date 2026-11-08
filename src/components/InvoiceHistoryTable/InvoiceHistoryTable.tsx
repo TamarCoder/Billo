@@ -41,7 +41,7 @@ export function InvoiceHistoryTable({
           <tr>
             <th className={styles.dateColumn} scope="col">თარიღი</th>
             <th className={styles.numberColumn} scope="col">ნომერი</th>
-            <th className={styles.companyColumn} scope="col">სადაზღვევო</th>
+            <th className={styles.companyColumn} scope="col">კომპანია</th>
             <th className={styles.periodColumn} scope="col">საანგარიშო პერიოდი</th>
             <th className={styles.amountColumn} scope="col">თანხა</th>
             <th className={styles.statusColumn} scope="col">სტატუსი</th>

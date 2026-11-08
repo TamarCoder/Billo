@@ -58,11 +58,16 @@ export default function Settings() {
   return (
     <main className={styles.page}>
       <nav className={styles.breadcrumb} aria-label="მდებარეობა">
-        <span>მთავარი</span>
+        <span>პარამეტრები</span>
         <span aria-hidden="true">/</span>
-        <span aria-current="page">პარამეტრები</span>
+        <span aria-current="page">ორგანიზაციის მონაცემები</span>
       </nav>
 
+      {!loadedSettings && !loadError ? (
+        <p className={styles.loading} role="status">
+          ორგანიზაციის მონაცემები იტვირთება…
+        </p>
+      ) : (
       <OrganizationSettingsForm
         values={values}
         error={
@@ -78,6 +83,7 @@ export default function Settings() {
         onSubmit={saveSettings}
         onCancel={cancelChanges}
       />
+      )}
     </main>
   );
 }

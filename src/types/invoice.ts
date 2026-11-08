@@ -33,7 +33,7 @@ export interface InvoiceRecord {
   invoice: InvoiceDraft;
 }
 
-export interface InsuranceCompany {
+export interface Company {
   id: string;
   number: string;
   name: string;

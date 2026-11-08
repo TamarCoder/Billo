@@ -1,12 +1,15 @@
 @use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
 @use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
 @use "abstracts/typography" as *;
 
 .page {
   display: grid;
-  gap: $space-4;
+  gap: $space-6;
   width: 100%;
-  min-width: 0;
+  align-content: start;
 }
 
 .breadcrumb {
@@ -15,9 +18,153 @@
   gap: $space-2;
   color: $color-text-muted;
   font-size: $text-sm;
+
+  [aria-current="page"] {
+    color: $color-text-strong;
+  }
 }
 
-.invoicePreview {
-  min-width: 0;
-  margin-top: $space-4;
+.status {
+  margin: 0;
+  color: $color-text-muted;
+  font-size: $text-sm;
+}
+
+.error {
+  margin: 0;
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $space-4;
+}
+
+%tile {
+  @include button-reset;
+  display: flex;
+  flex-direction: column;
+  min-height: 96px;
+  padding: $space-4 $space-5;
+  border: 1px solid $glass-border-color;
+  border-radius: $radius-xl;
+  text-align: left;
+  box-shadow: var(--shadow-md);
+  @include glass($surface-glass);
+  @include transition(transform border-color background-color);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: $color-border-strong;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.card {
+  @extend %tile;
+  position: relative;
+  padding: 0;
+}
+
+.cardOpen {
+  @include button-reset;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: $space-1;
+  padding: $space-4 $space-12 $space-4 $space-5;
+  border-radius: inherit;
+  text-align: left;
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+.cardActions {
+  position: absolute;
+  top: $space-2;
+  right: $space-2;
+  display: flex;
+  gap: $space-1;
+}
+
+.iconButton {
+  @include button-reset;
+  @include center;
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-md;
+  color: $color-text-muted;
+  @include transition(background-color color);
+
+  &:hover {
+    background: $surface-hover;
+    color: $color-text-strong;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.danger:hover {
+  background: color-mix(in srgb, $color-danger 12%, transparent);
+  color: $color-danger;
+}
+
+.addIcon {
+  @include center;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-lg;
+  background: $surface-hover;
+  color: $color-primary;
+}
+
+.cardTitle {
+  color: $color-text-strong;
+  font-size: $text-lg;
+  font-weight: $weight-semibold;
+  line-height: $leading-snug;
+}
+
+.cardCode {
+  color: $color-text;
+  font-family: $font-mono;
+  font-size: $text-sm;
+}
+
+.addCard {
+  @extend %tile;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: $space-3;
+  border-style: dashed;
+  color: $color-text-muted;
+  font-size: $text-md;
+  font-weight: $weight-medium;
+  box-shadow: none;
+  text-align: center;
+
+  &:hover {
+    color: $color-text-strong;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover,
+  .addCard:hover {
+    transform: none;
+  }
 }

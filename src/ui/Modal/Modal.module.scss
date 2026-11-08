@@ -1,0 +1,99 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+@use "abstracts/z-index" as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: $space-6 $space-4;
+}
+
+.page {
+  background: $bg-mesh;
+  background-color: $surface-page;
+}
+
+.dim {
+  background: color-mix(in srgb, $surface-page 55%, transparent);
+  @include glass-blur;
+}
+
+.dialog {
+  position: relative;
+  display: flex;
+  width: min(100%, 420px);
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-8 $space-6;
+  border-radius: $radius-xl;
+  color: $color-text;
+  box-shadow: var(--shadow-md);
+  @include glass($surface-glass-strong);
+}
+
+.lg {
+  width: min(100%, 760px);
+}
+
+.close {
+  @include button-reset;
+  @include center;
+  position: absolute;
+  top: $space-4;
+  right: $space-4;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-md;
+  color: $color-text-muted;
+  cursor: pointer;
+
+  &:hover {
+    background: $surface-hover;
+    color: $color-text-strong;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.icon {
+  @include center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: $space-1;
+  border-radius: $radius-lg;
+  background: $surface-hover;
+  color: $color-primary;
+}
+
+.title {
+  margin: 0;
+  color: $color-text-strong;
+  font-size: $text-xl;
+  font-weight: $weight-semibold;
+  line-height: $leading-tight;
+}
+
+.description {
+  margin: 0 0 $space-2;
+  color: $color-text-muted;
+  font-size: $text-sm;
+  line-height: $leading-normal;
+}
+
+.footer {
+  margin-top: $space-2;
+  color: $color-text-muted;
+  font-size: $text-sm;
+  text-align: center;
+}

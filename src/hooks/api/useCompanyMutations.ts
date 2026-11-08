@@ -3,20 +3,20 @@ import { useSWRConfig } from "swr";
 import { API_ENDPOINTS } from "@/api/endpoints";
 import { companiesApi } from "@/api/companies";
 import type {
-  CreateInsuranceCompanyRequest,
-  UpdateInsuranceCompanyRequest,
+  CreateCompanyRequest,
+  UpdateCompanyRequest,
 } from "@/types/api";
 
 type UpdateCompanyInput = {
   id: string;
-  values: UpdateInsuranceCompanyRequest;
+  values: UpdateCompanyRequest;
 };
 
 export function useCompanyMutations() {
   const { mutate } = useSWRConfig();
   const { trigger: create, isMutating: isCreating } = useSWRMutation(
     API_ENDPOINTS.companies,
-    (_key, { arg }: { arg: CreateInsuranceCompanyRequest }) =>
+    (_key, { arg }: { arg: CreateCompanyRequest }) =>
       companiesApi.create(arg),
   );
   const { trigger: update, isMutating: isUpdating } = useSWRMutation(
@@ -29,14 +29,14 @@ export function useCompanyMutations() {
     (_key, { arg }: { arg: string }) => companiesApi.delete(arg),
   );
 
-  const createCompany = async (input: CreateInsuranceCompanyRequest) => {
+  const createCompany = async (input: CreateCompanyRequest) => {
     const company = await create(input);
     await mutate(API_ENDPOINTS.companies);
     return company;
   };
   const updateCompany = async (
     id: string,
-    values: UpdateInsuranceCompanyRequest,
+    values: UpdateCompanyRequest,
   ) => {
     const company = await update({ id, values });
     await mutate(API_ENDPOINTS.companies);

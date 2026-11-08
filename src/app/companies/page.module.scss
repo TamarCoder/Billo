@@ -87,7 +87,6 @@
 
 .companyItem {
   display: grid;
-  /* შეცვლილია: ნომერი | სახელი | ხატულები */
   grid-template-columns: 20px minmax(0, 1fr) auto;
   align-items: center;
   gap: $space-3;
@@ -105,7 +104,6 @@
   background: $surface-selected;
 }
 
-/* ახალი */
 .companyNumber {
   color: $color-text-muted;
   font-size: $text-md;
@@ -182,7 +180,6 @@
   }
 
   .companyItem {
-    /* შეცვლილია: პატარა ეკრანზე ნომრის სვეტი ვიწროვდება */
     grid-template-columns: 56px minmax(0, 1fr) auto;
     gap: $space-2;
     padding: $space-2;

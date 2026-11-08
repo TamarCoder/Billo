@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ConfirmDelete } from "@/components/ConfirmDelete/ConfirmDelete";
 import { Card } from "@/components/Card/Card";
 import { CompanyNameForm } from "@/components/CompanyNameForm/CompanyNameForm";
 import { Button } from "@/ui/Button/Button";
@@ -7,7 +9,7 @@ import { Pagination } from "@/ui/Pagination/Pagination";
 import { useCompanyPageState } from "@/hooks/useCompanyPageState";
 import { useCompanies } from "@/hooks/api/useCompanies";
 import { useCompanyMutations } from "@/hooks/api/useCompanyMutations";
-import type { InsuranceCompany } from "@/types/invoice";
+import type { Company } from "@/types/invoice";
 import styles from "./page.module.scss";
 
 const ITEMS_PER_PAGE = 7;
@@ -45,7 +47,7 @@ export default function Companies() {
 
   const query = search.trim().toLocaleLowerCase("ka-GE");
 
-  const matchesQuery = (company: InsuranceCompany) =>
+  const matchesQuery = (company: Company) =>
     (company.name ?? "").toLocaleLowerCase("ka-GE").includes(query) ||
     (company.number ?? "").toLocaleLowerCase("ka-GE").includes(query);
 
@@ -81,7 +83,7 @@ export default function Companies() {
     setStorageError("");
   };
 
-  const startEditing = (company: InsuranceCompany) => {
+  const startEditing = (company: Company) => {
     setEditingId(company.id);
     setNumberDraft(company.number ?? "");
     setNameDraft(company.name);
@@ -109,6 +111,8 @@ export default function Companies() {
     setStorageError("");
     resetEditing();
   };
+
+  const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
 
   const deleteCompany = async (companyId: string) => {
     const remainingCompanies = companies.filter(
@@ -138,9 +142,9 @@ export default function Companies() {
     <main className={styles.page}>
       <nav className={styles.breadcrumb} aria-label="მდებარეობა">
         <div className={styles.breadcrumbPath}>
-          <span>კომპანიების მართვა</span>
+          <span>კომპანიები</span>
           <span aria-hidden="true">/</span>
-          <span aria-current="page">სადაზღვევო კომპანიები</span>
+          <span aria-current="page">კომპანიების სია</span>
         </div>
         <div className={styles.pageActions}>
           <label className={styles.searchField}>
@@ -166,7 +170,7 @@ export default function Companies() {
             disabled={editingId !== null || isLoading || Boolean(loadError)}
             onClick={startCreating}
           >
-            სადაზღვევოს დამატება
+            კომპანიის დამატება
           </Button>
         </div>
       </nav>
@@ -185,7 +189,7 @@ export default function Companies() {
                 : "კომპანიების ჩატვირთვა ვერ მოხერხდა.")}
           </p>
         )}
-        <div className={styles.companyList} aria-label="სადაზღვევო კომპანიების სია">
+        <div className={styles.companyList} aria-label="კომპანიების სია">
           {isCreating && editingId === NEW_COMPANY_ID && (
             <article
               className={`${styles.companyItem} ${styles.editingItem}`}
@@ -241,7 +245,7 @@ export default function Companies() {
                         className={styles.iconButton}
                         aria-label={`${company.name} წაშლა`}
                         disabled={isMutating}
-                        onClick={() => void deleteCompany(company.id)}
+                        onClick={() => setCompanyToDelete(company)}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -271,10 +275,18 @@ export default function Companies() {
             totalPages={totalPages}
             totalItems={filteredCompanies.length}
             onPageChange={setCurrentPage}
-            aria-label="სადაზღვევო კომპანიების გვერდები"
+            aria-label="კომპანიების გვერდები"
           />
         )}
       </Card>
+
+      {companyToDelete && (
+        <ConfirmDelete
+          itemName={companyToDelete.name}
+          onConfirm={() => deleteCompany(companyToDelete.id)}
+          onClose={() => setCompanyToDelete(null)}
+        />
+      )}
     </main>
   );
 }

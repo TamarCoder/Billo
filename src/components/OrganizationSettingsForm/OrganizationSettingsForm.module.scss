@@ -22,6 +22,11 @@
   border-radius: $radius-md;
 }
 
+.plainSection {
+  padding: 0;
+  border: 0;
+}
+
 .formSection legend {
   padding-inline: $space-2;
   color: $color-text-strong;

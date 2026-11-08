@@ -232,14 +232,12 @@ export function DatePicker({
             ))}
             {days.map(({ date, value: dateValue }) => {
               const isSelected = dateValue === value;
-              const isToday = dateValue === todayValue;
               const isCurrentMonth =
                 date.getMonth() === visibleMonth.getMonth();
               const isDisabled = !isWithinRange(dateValue, min, max);
               const dayClassName = [
                 styles.day,
                 !isCurrentMonth && styles.outsideMonth,
-                isToday && styles.today,
                 isSelected && styles.selected,
               ]
                 .filter(Boolean)
@@ -255,7 +253,6 @@ export function DatePicker({
                     dateStyle: "full",
                   }).format(date)}
                   aria-pressed={isSelected}
-                  aria-current={isToday ? "date" : undefined}
                   disabled={isDisabled}
                   onClick={() => selectDate(date, dateValue)}
                 >
