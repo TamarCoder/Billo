@@ -38,7 +38,7 @@ export function ForgotPasswordForm({
           {...register("identificationCode", identificationCodeRules)}
         />
       </FormField>
-      <Button type="submit" fullWidth loading={isSubmitting}>
+      <Button type="submit" variant="success" fullWidth loading={isSubmitting}>
         აღდგენის ბმულის გაგზავნა
       </Button>
     </form>

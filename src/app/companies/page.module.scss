@@ -144,6 +144,16 @@
   }
 }
 
+.deleteButton {
+  color: $color-danger;
+
+  &:hover {
+    border-color: $color-danger;
+    background: color-mix(in srgb, $color-danger 12%, transparent);
+    color: $color-danger;
+  }
+}
+
 .itemActions {
   display: flex;
   align-items: center;

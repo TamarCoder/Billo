@@ -132,6 +132,7 @@ export default function History() {
             />
           </label>
           <Button
+            variant="success"
             size="sm"
             leadingIcon={<Plus size={16} />}
             onClick={() => navigate(primaryInvoicePath)}

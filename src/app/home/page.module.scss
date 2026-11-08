@@ -117,9 +117,13 @@
   }
 }
 
-.danger:hover {
-  background: color-mix(in srgb, $color-danger 12%, transparent);
+.danger {
   color: $color-danger;
+
+  &:hover {
+    background: color-mix(in srgb, $color-danger 12%, transparent);
+    color: $color-danger;
+  }
 }
 
 .addIcon {

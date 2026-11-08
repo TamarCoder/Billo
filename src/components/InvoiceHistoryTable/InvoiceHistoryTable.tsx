@@ -90,7 +90,7 @@ export function InvoiceHistoryTable({
                     </Button>
                     <Button
                       className={styles.actionButton}
-                      variant="outline"
+                      variant="info"
                       size="sm"
                       aria-label={`ინვოისის № ${record.invoice.invoiceNumber} PDF`}
                       onClick={() => onExportPdf(record)}
@@ -98,8 +98,8 @@ export function InvoiceHistoryTable({
                       PDF
                     </Button>
                     <Button
-                      className={`${styles.actionButton} ${styles.deleteButton}`}
-                      variant="outline"
+                      className={styles.actionButton}
+                      variant="danger"
                       size="sm"
                       aria-label={`ინვოისის № ${record.invoice.invoiceNumber} წაშლა`}
                       onClick={() => onDelete(record)}

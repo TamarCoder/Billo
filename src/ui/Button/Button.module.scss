@@ -117,6 +117,24 @@
   }
 }
 
+.warning {
+  background: $color-warning;
+  color: $color-on-warning;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+}
+
+.info {
+  background: $color-info;
+  color: $color-text-inverse;
+
+  &:hover:not(:disabled) {
+    background: $color-info-hover;
+  }
+}
+
 .icon {
   display: inline-flex;
   flex: 0 0 auto;

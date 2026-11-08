@@ -370,7 +370,7 @@ export function InvoiceForm({
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="info"
               size="sm"
               leadingIcon={<FileDown size={16} />}
               disabled={!isSaved}
@@ -390,12 +390,12 @@ export function InvoiceForm({
             )}
           </div>
           <div className={styles.actionGroup}>
-            <Button type="submit" variant="success" size="sm" disabled={isSubmitting}>
+            <Button type="submit" variant="warning" size="sm" disabled={isSubmitting}>
               შენახვა
             </Button>
             <Button
               type="button"
-              variant="danger"
+              variant="outline"
               size="sm"
               onClick={onReset}
             >

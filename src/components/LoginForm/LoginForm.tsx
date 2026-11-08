@@ -57,7 +57,7 @@ export function LoginForm({ onSubmit, error, defaultValues }: LoginFormProps) {
           {error}
         </p>
       )}
-      <Button type="submit" fullWidth loading={isSubmitting}>
+      <Button type="submit" variant="success" fullWidth loading={isSubmitting}>
         შესვლა
       </Button>
     </form>

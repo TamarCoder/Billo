@@ -55,7 +55,7 @@ export function RegisterForm({ onSubmit, error }: RegisterFormProps) {
           {error}
         </p>
       )}
-      <Button type="submit" fullWidth loading={isSubmitting}>
+      <Button type="submit" variant="success" fullWidth loading={isSubmitting}>
         რეგისტრაცია
       </Button>
     </form>
