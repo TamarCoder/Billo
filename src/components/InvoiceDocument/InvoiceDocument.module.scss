@@ -174,6 +174,13 @@
     margin: 0;
   }
 
+  // Clip to one sheet so hidden page content cannot add a second page.
+  :global(html),
+  :global(body) {
+    height: 210mm !important;
+    overflow: hidden !important;
+  }
+
   :global(body *) {
     visibility: hidden !important;
   }
@@ -183,9 +190,11 @@
     visibility: visible !important;
   }
 
+  // absolute, not fixed: fixed elements repeat on every printed page.
   .document {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 297mm;
     height: 210mm;
     max-width: none;
