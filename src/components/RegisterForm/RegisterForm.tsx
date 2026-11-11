@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/ui/Button/Button";
 import { FormField } from "@/ui/FormField/FormField";
 import { Input } from "@/ui/Input/Input";
+import { PasswordInput } from "@/ui/PasswordInput/PasswordInput";
 import { emailRules, identificationCodeRules, passwordRules } from "@/lib/authRules";
 import styles from "@/components/AuthForm/AuthForm.module.scss";
 
@@ -42,9 +43,8 @@ export function RegisterForm({ onSubmit, error }: RegisterFormProps) {
         />
       </FormField>
       <FormField label="პაროლი" htmlFor="register-password" error={errors.password?.message}>
-        <Input
+        <PasswordInput
           id="register-password"
-          type="password"
           autoComplete="new-password"
           status={errors.password ? "error" : "default"}
           {...register("password", passwordRules)}

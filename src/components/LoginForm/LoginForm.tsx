@@ -4,6 +4,7 @@ import { Button } from "@/ui/Button/Button";
 import { Checkbox } from "@/ui/Checkbox/Checkbox";
 import { FormField } from "@/ui/FormField/FormField";
 import { Input } from "@/ui/Input/Input";
+import { PasswordInput } from "@/ui/PasswordInput/PasswordInput";
 import { identificationCodeRules, passwordRules } from "@/lib/authRules";
 import styles from "@/components/AuthForm/AuthForm.module.scss";
 
@@ -38,9 +39,8 @@ export function LoginForm({ onSubmit, error, defaultValues }: LoginFormProps) {
         />
       </FormField>
       <FormField label="პაროლი" htmlFor="login-password" error={errors.password?.message}>
-        <Input
+        <PasswordInput
           id="login-password"
-          type="password"
           autoComplete="current-password"
           status={errors.password ? "error" : "default"}
           {...register("password", { required: passwordRules.required })}
