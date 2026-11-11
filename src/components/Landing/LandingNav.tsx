@@ -12,13 +12,13 @@ export function LandingNav({ onOpen }: LandingNavProps) {
     <header className={styles.nav}>
       <img className={styles.brand} src="/logo-horizontal.svg" alt="Billo" />
       <nav className={styles.menu} aria-label="მენიუ">
-        <Button variant="glass" aria-current="page">
+        <Button variant="glass" size="sm" aria-current="page">
           მთავარი
         </Button>
-        <Button variant="ghost" onClick={() => onOpen("about")}>
+        <Button variant="ghost" size="sm" onClick={() => onOpen("about")}>
           პროექტის შესახებ
         </Button>
-        <Button variant="ghost" onClick={() => onOpen("contacts")}>
+        <Button variant="ghost" size="sm" onClick={() => onOpen("contacts")}>
           კონტაქტები
         </Button>
       </nav>

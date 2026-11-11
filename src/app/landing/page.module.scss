@@ -29,28 +29,29 @@
   align-items: center;
   justify-content: center;
   gap: clamp(#{$space-2}, 2vh, #{$space-6});
-  padding-bottom: 6vh;
+  padding-bottom: 12vh;
   text-align: center;
 }
 
 .title {
-  font-size: clamp(#{$text-xl}, 3.2vw, 3.25rem);
+  font-size: clamp(#{$text-lg}, 2.3vw, 2.25rem);
   font-weight: $weight-medium;
   background: linear-gradient(90deg, $indigo-700, $teal-400);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  margin-bottom: 4vh;
+  margin-bottom: 2vh;
 }
 
 .logo {
-  width: clamp(140px, 24vh, 300px);
+  width: clamp(120px, 22vh, 260px);
   height: auto;
+  margin-bottom: -5vh;
   filter: drop-shadow(0 0 40px $indigo-300);
 }
 
 .wordmark {
-  font-size: clamp(3rem, 11vh, 8rem);
+  font-size: clamp(2.5rem, 9vh, 6.5rem);
   font-weight: $weight-heavy;
   line-height: $leading-none;
   letter-spacing: $tracking-tight;
@@ -61,7 +62,7 @@
 .actions {
   display: flex;
   gap: $space-4;
-  margin-top: 3vh;
+  margin-top: 1vh;
 
   button {
     min-width: 180px;
