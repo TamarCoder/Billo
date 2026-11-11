@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, FileText, History, Home, LogOut, RefreshCw, Settings } from "lucide-react";
+import { Building2, FileText, Files, History, Home, LogOut, RefreshCw, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSWRConfig } from "swr";
 import { authApi } from "@/api/auth";
@@ -14,6 +14,7 @@ const homeItem = { to: "/home", title: "მთავარი", icon: <Home size
 const navigationItems = [
   { to: "/companies", title: "კომპანიები", icon: <Building2 size={20} /> },
   { to: "/history", title: "ისტორია", icon: <History size={20} /> },
+  { to: "/forms", title: "ფორმები", icon: <Files size={20} /> },
 ];
 
 export function Aside() {

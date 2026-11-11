@@ -10,6 +10,7 @@ import InvoicePage from "@/app/invoice/page";
 import Companies from "@/app/companies/page";
 import History from "@/app/history/page";
 import Settings from "@/app/settings/page";
+import FormsPage from "@/app/forms/page";
 import LoginPage from "@/app/login/page";
 import RegisterPage from "@/app/register/page";
 import ForgotPasswordPage from "@/app/forgot-password/page";
@@ -44,6 +45,7 @@ createRoot(rootElement).render(
               <Route path="/invoice/:issuerId" element={<InvoicePage />} />
               <Route path="/companies" element={<Companies />} />
               <Route path="/history" element={<History />} />
+              <Route path="/forms" element={<FormsPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

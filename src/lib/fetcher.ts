@@ -1,7 +1,7 @@
 import { getSessionToken, requireSession } from "@/lib/session";
 
 // Base URL of Billo--Backend. Set VITE_API_URL in .env.local.
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 export class ApiError extends Error {
   constructor(
@@ -63,4 +63,15 @@ export async function fetcher<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return body as T;
+}
+
+// Authenticated file download (the response is a file, not JSON).
+export async function fetchBlob(path: string): Promise<Blob> {
+  const sessionToken = getSessionToken();
+  const headers = new Headers();
+  if (sessionToken) headers.set("Authorization", `Bearer ${sessionToken}`);
+  const res = await fetch(`${API_URL.replace(/\/+$/u, "")}${path}`, { headers });
+  if (res.status === 401) requireSession();
+  if (!res.ok) throw new ApiError(res.status, null, "ფაილის ჩამოტვირთვა ვერ მოხერხდა.");
+  return res.blob();
 }

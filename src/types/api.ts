@@ -40,3 +40,13 @@ export interface Issuer extends OrganizationSettings {
   id: string;
   isPrimary: boolean;
 }
+
+// A file an admin uploaded for this organization.
+export interface InvoiceFormFile {
+  id: string;
+  organizationId: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+}

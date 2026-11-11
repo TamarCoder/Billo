@@ -5,6 +5,7 @@ export interface OrganizationAccount {
   id: string;
   identificationCode: string;
   email: string;
+  role?: "organization" | "admin";
 }
 
 export interface LoginResponse {

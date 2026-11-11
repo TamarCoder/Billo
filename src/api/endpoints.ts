@@ -8,6 +8,9 @@ export const API_ENDPOINTS = {
   settings: "/api/settings",
   issuers: "/api/issuers",
   issuer: (id: string) => `/api/issuers/${encodeURIComponent(id)}`,
+  invoiceForms: "/api/invoice-forms",
+  invoiceFormFile: (id: string) =>
+    `/api/invoice-forms/${encodeURIComponent(id)}/file`,
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
   authLogout: "/api/auth/logout",

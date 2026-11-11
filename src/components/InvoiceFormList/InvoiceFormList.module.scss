@@ -1,0 +1,64 @@
+@use "abstracts/colors" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.list {
+  display: grid;
+  gap: $space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: $space-3;
+  min-height: 56px;
+  padding: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $surface-glass;
+}
+
+.icon {
+  color: $color-text-muted;
+}
+
+.name {
+  overflow: hidden;
+  color: $color-text-strong;
+  font-size: $text-md;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  color: $color-text-muted;
+  font-size: $text-sm;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: $space-2;
+}
+
+.empty {
+  margin: 0;
+  color: $color-text-muted;
+  font-size: $text-sm;
+}
+
+@media (max-width: 600px) {
+  .item {
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+  }
+
+  .meta {
+    display: none;
+  }
+}
