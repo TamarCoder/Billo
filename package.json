@@ -61,18 +61,6 @@
         "dmg"
       ],
       "category": "public.app-category.finance"
-    },
-    "win": {
-      "icon": "public/icon.ico",
-      "target": [
-        "nsis"
-      ]
-    },
-    "linux": {
-      "icon": "public/icon.png",
-      "target": [
-        "AppImage"
-      ]
     }
   }
 }

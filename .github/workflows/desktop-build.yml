@@ -19,8 +19,6 @@ jobs:
         include:
           - platform: macOS
             os: macos-latest
-          - platform: Windows
-            os: windows-latest
 
     steps:
       - name: Check out source
@@ -50,7 +48,6 @@ jobs:
           name: billo-${{ matrix.platform }}
           path: |
             release/*.dmg
-            release/*.exe
             release/*.blockmap
             release/*.yml
           if-no-files-found: error
