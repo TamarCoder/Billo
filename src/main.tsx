@@ -13,8 +13,13 @@ import Settings from "@/app/settings/page";
 import LoginPage from "@/app/login/page";
 import RegisterPage from "@/app/register/page";
 import ForgotPasswordPage from "@/app/forgot-password/page";
-import { StartupVideo } from "@/components/StartupVideo/StartupVideo";
+import LandingPage from "@/app/landing/page";
+import { getSessionToken } from "@/lib/session";
 import "@/app/globals.scss";
+
+function RootRedirect() {
+  return getSessionToken() ? <Navigate to="/home" replace /> : <LandingPage />;
+}
 
 const rootElement = document.getElementById("root");
 
@@ -30,7 +35,7 @@ createRoot(rootElement).render(
         <BrowserRouter>
           <AppLayout>
             <Routes>
-              <Route path="/" element={<StartupVideo />} />
+              <Route path="/" element={<RootRedirect />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />

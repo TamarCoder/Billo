@@ -1,0 +1,70 @@
+@use "abstracts/colors" as *;
+@use "abstracts/palette" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+@use "abstracts/z-index" as *;
+
+// Fills the window exactly; nothing on this page scrolls.
+.landing {
+  position: fixed;
+  inset: 0;
+  z-index: $z-dropdown;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  background: $surface-page;
+  color: $color-text-strong;
+
+  :global(body:has(.window-titlebar)) & {
+    top: 40px;
+  }
+}
+
+.hero {
+  position: relative;
+  z-index: $z-raised;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(#{$space-2}, 2vh, #{$space-6});
+  padding-bottom: 6vh;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(#{$text-xl}, 3.2vw, 3.25rem);
+  font-weight: $weight-medium;
+  background: linear-gradient(90deg, $indigo-700, $teal-400);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 4vh;
+}
+
+.logo {
+  width: clamp(140px, 24vh, 300px);
+  height: auto;
+  filter: drop-shadow(0 0 40px $indigo-300);
+}
+
+.wordmark {
+  font-size: clamp(3rem, 11vh, 8rem);
+  font-weight: $weight-heavy;
+  line-height: $leading-none;
+  letter-spacing: $tracking-tight;
+  color: $indigo-700;
+  text-shadow: 0 0 32px $indigo-300;
+}
+
+.actions {
+  display: flex;
+  gap: $space-4;
+  margin-top: 3vh;
+
+  button {
+    min-width: 180px;
+    font-size: $text-lg;
+  }
+}
