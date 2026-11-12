@@ -90,3 +90,41 @@
     color: $color-text-strong;
   }
 }
+
+// List on the left, chosen form on the right. Stacks on smaller screens.
+.split {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  align-items: start;
+  gap: $space-5;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.side {
+  display: grid;
+  gap: $space-4;
+  min-width: 0;
+}
+
+.preview {
+  min-width: 0;
+}
+
+.previewHint {
+  display: grid;
+  min-height: 240px;
+  margin: 0;
+  place-items: center;
+  border: 1px dashed $color-border;
+  border-radius: $radius-lg;
+  color: $color-text-muted;
+  font-size: $text-sm;
+}
+
+.template[aria-current="page"] {
+  border-color: $color-primary;
+  background: $surface-hover;
+}

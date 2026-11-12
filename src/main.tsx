@@ -11,7 +11,6 @@ import Companies from "@/app/companies/page";
 import History from "@/app/history/page";
 import Settings from "@/app/settings/page";
 import FormsPage from "@/app/forms/page";
-import FormTemplatePage from "@/app/forms/template/page";
 import LoginPage from "@/app/login/page";
 import RegisterPage from "@/app/register/page";
 import ForgotPasswordPage from "@/app/forgot-password/page";
@@ -50,7 +49,7 @@ createRoot(rootElement).render(
               <Route path="/companies" element={<Companies />} />
               <Route path="/history" element={<History />} />
               <Route path="/forms" element={<FormsPage />} />
-              <Route path="/forms/:templateKey" element={<FormTemplatePage />} />
+              <Route path="/forms/:templateKey" element={<FormsPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
