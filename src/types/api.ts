@@ -41,7 +41,18 @@ export interface Issuer extends OrganizationSettings {
   isPrimary: boolean;
 }
 
-// A file an admin uploaded for this organization.
+// The organization sends its invoice sample (submitted). The owner builds the template in code
+// (in_progress) and sends it for review (review). The organization approves it (approved) or asks
+// for changes (changes_requested). The owner publishes it (live) and it appears in "My forms".
+export type InvoiceFormStatus =
+  | "submitted"
+  | "in_progress"
+  | "review"
+  | "approved"
+  | "changes_requested"
+  | "live";
+
+// An invoice sample the organization sent to Billo.
 export interface InvoiceFormFile {
   id: string;
   organizationId: string;
@@ -49,4 +60,7 @@ export interface InvoiceFormFile {
   mimeType: string;
   size: number;
   createdAt: string;
+  status?: InvoiceFormStatus;
+  reviewComment?: string | null;
+  templateKey?: string | null;
 }

@@ -1,0 +1,29 @@
+@use "abstracts/colors" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/typography" as *;
+
+.frame {
+  display: block;
+  width: 100%;
+  height: min(80vh, 1100px);
+  border: 0;
+  border-radius: $radius-lg;
+  background: #fff;
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  margin-inline: auto;
+  border-radius: $radius-lg;
+}
+
+.message {
+  margin: 0;
+  color: $color-text-muted;
+  font-size: $text-sm;
+
+  a {
+    color: $color-link;
+  }
+}

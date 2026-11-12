@@ -5,7 +5,8 @@ import { ConfirmDelete } from "@/components/ConfirmDelete/ConfirmDelete";
 import { Card } from "@/components/Card/Card";
 import { DatePicker } from "@/components/DatePicker/DatePicker";
 import { MonthYearPicker } from "@/components/MonthYearPicker/MonthYearPicker";
-import { InvoiceDocument } from "@/components/InvoiceDocument/InvoiceDocument";
+import type { InvoiceDocumentProps } from "@/components/InvoiceDocument/InvoiceDocument";
+import { templateOfInvoice } from "@/invoiceTemplates/registry";
 import { InvoiceHistoryTable } from "@/components/InvoiceHistoryTable/InvoiceHistoryTable";
 import { INVOICE_STATUS_OPTIONS } from "@/components/InvoiceHistoryTable/invoiceStatus";
 import { Button } from "@/ui/Button/Button";
@@ -30,13 +31,18 @@ function formatDate(value: string) {
   return year && month && day ? `${day}.${month}.${year}` : value;
 }
 
+// Old and new invoices are redrawn with the template they were made with.
+function PdfDocument(props: InvoiceDocumentProps & { templateKey?: string }) {
+  const { templateKey, ...rest } = props;
+  const Document = templateOfInvoice(templateKey).document;
+  return <Document {...rest} />;
+}
+
 export default function History() {
   const navigate = useNavigate();
   const { data: records = [], error: loadError } = useInvoices();
-  const {
-    data: registeredCompanies = [],
-    error: companiesLoadError,
-  } = useCompanies();
+  const { data: registeredCompanies = [], error: companiesLoadError } =
+    useCompanies();
   const { deleteInvoice: removeInvoice } = useInvoiceMutations();
   const {
     search,
@@ -71,7 +77,9 @@ export default function History() {
       itemsPerPage: ITEMS_PER_PAGE,
     });
 
-  const [recordToDelete, setRecordToDelete] = useState<InvoiceRecord | null>(null);
+  const [recordToDelete, setRecordToDelete] = useState<InvoiceRecord | null>(
+    null,
+  );
 
   const removeRecord = async (record: InvoiceRecord) => {
     try {
@@ -85,9 +93,7 @@ export default function History() {
       setError("");
     } catch (error) {
       setError(
-        error instanceof Error
-          ? error.message
-          : "ინვოისის წაშლა ვერ მოხერხდა.",
+        error instanceof Error ? error.message : "ინვოისის წაშლა ვერ მოხერხდა.",
       );
     }
   };
@@ -111,7 +117,11 @@ export default function History() {
         </div>
         <div className={styles.pageActions}>
           <label className={styles.searchField}>
-            <Search className={styles.searchIcon} size={17} aria-hidden="true" />
+            <Search
+              className={styles.searchIcon}
+              size={17}
+              aria-hidden="true"
+            />
             <Input
               className={styles.searchInput}
               size="sm"
@@ -287,7 +297,7 @@ export default function History() {
       </Card>
       {pdfRecord && (
         <div className={styles.printDocument}>
-          <InvoiceDocument
+          <PdfDocument
             organization={pdfRecord.invoice.title}
             invoiceNumber={pdfRecord.invoice.invoiceNumber}
             reportingDate={formatDate(pdfRecord.invoice.reportingDate)}
@@ -304,6 +314,7 @@ export default function History() {
             serviceDescription={pdfRecord.invoice.reportingDescription}
             amount={pdfRecord.invoice.amount}
             amountInWords={pdfRecord.invoice.amountInWords}
+            templateKey={pdfRecord.invoice.templateKey}
           />
         </div>
       )}

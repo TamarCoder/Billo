@@ -49,6 +49,7 @@ createRoot(rootElement).render(
               <Route path="/companies" element={<Companies />} />
               <Route path="/history" element={<History />} />
               <Route path="/forms" element={<FormsPage />} />
+              <Route path="/forms/file/:fileId" element={<FormsPage />} />
               <Route path="/forms/:templateKey" element={<FormsPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,4 +1,5 @@
-@use "abstracts/radius";
+@use "abstracts/radius" as *;
+@use "abstracts/surfaces" as *;
 @use "abstracts/colors" as *;
 @use "abstracts/spacing" as *;
 @use "abstracts/typography" as *;
@@ -25,8 +26,27 @@
 .lockedNotice {
   margin: 0;
   padding: $space-3 $space-4;
-  border-radius: radius.$radius-md;
+  border-radius: $radius-md;
   background: $color-warning;
   color: $color-on-warning;
   font-size: $text-sm;
+}
+
+.templatePicker {
+  display: grid;
+  gap: $space-2;
+  max-width: 480px;
+  margin-bottom: $space-4;
+  color: $color-text;
+  font-size: $text-sm;
+
+  select {
+    min-height: 44px;
+    padding: 0 $space-3;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background: $surface-glass;
+    color: $color-text-strong;
+    font: inherit;
+  }
 }

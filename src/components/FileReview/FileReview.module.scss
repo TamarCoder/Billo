@@ -1,0 +1,85 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.review {
+  display: grid;
+  gap: $space-4;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.name {
+  overflow: hidden;
+  color: $color-text-strong;
+  font-size: $text-lg;
+  font-weight: $weight-semibold;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note {
+  margin: 0;
+  padding: $space-3 $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $surface-hover;
+  color: $color-text;
+  font-size: $text-sm;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+}
+
+.changes {
+  display: grid;
+  gap: $space-2;
+  color: $color-text;
+  font-size: $text-sm;
+}
+
+.textarea {
+  width: 100%;
+  padding: $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $surface-glass;
+  color: $color-text-strong;
+  font: inherit;
+  resize: vertical;
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 1px;
+  }
+}
+
+.error {
+  margin: 0;
+  color: $color-danger;
+  font-size: $text-sm;
+}
+
+.section {
+  display: grid;
+  gap: $space-3;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: $color-text-muted;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+}

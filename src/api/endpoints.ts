@@ -11,6 +11,10 @@ export const API_ENDPOINTS = {
   invoiceForms: "/api/invoice-forms",
   invoiceFormFile: (id: string) =>
     `/api/invoice-forms/${encodeURIComponent(id)}/file`,
+  invoiceFormApprove: (id: string) =>
+    `/api/invoice-forms/${encodeURIComponent(id)}/approve`,
+  invoiceFormRequestChanges: (id: string) =>
+    `/api/invoice-forms/${encodeURIComponent(id)}/request-changes`,
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
   authLogout: "/api/auth/logout",

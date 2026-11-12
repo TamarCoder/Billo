@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { InvoiceDocument } from "@/components/InvoiceDocument/InvoiceDocument";
-import { InvoiceForm } from "@/components/InvoiceForm/InvoiceForm";
+import { Link } from "react-router-dom";
+import { useAccount } from "@/hooks/api/useAccount";
+import { INVOICE_TEMPLATES, templatesFor } from "@/invoiceTemplates/registry";
 import { useInvoicePageState } from "@/hooks/useInvoicePageState";
 import { useLoadInvoicePage } from "@/hooks/useLoadInvoicePage";
 import { useCompanies } from "@/hooks/api/useCompanies";
@@ -38,6 +39,8 @@ function getInitialDraft(): InvoiceDraft {
 
 export default function InvoicePage() {
   const { issuerId } = useParams();
+  const { data: account } = useAccount();
+  const templates = templatesFor(account?.invoiceTemplates);
   const {
     data: companies = [],
     error: companiesLoadError,
@@ -58,7 +61,8 @@ export default function InvoicePage() {
     ? issuers?.find((item) => item.id === issuerId)
     : (issuers?.find((item) => item.isPrimary) ?? issuers?.[0]);
   const settingsLoadError =
-    issuersLoadError ?? (issuers && !issuer ? new Error("ორგანიზაცია ვერ მოიძებნა.") : undefined);
+    issuersLoadError ??
+    (issuers && !issuer ? new Error("ორგანიზაცია ვერ მოიძებნა.") : undefined);
   const settings = useMemo(() => {
     if (!issuer) return EMPTY_ORGANIZATION_SETTINGS;
     return {
@@ -91,13 +95,24 @@ export default function InvoicePage() {
     records,
     settings,
     // An invoice being edited already carries its issuer, so a missing organization must not block it.
-    isReady: !invoicesLoading && !settingsLoading && !invoicesLoadError && !issuersLoadError,
+    isReady:
+      !invoicesLoading &&
+      !settingsLoading &&
+      !invoicesLoadError &&
+      !issuersLoadError,
     setFormResetKey,
     setDraft,
     setRecordId,
     setIsSaved,
     setError: setSaveError,
   });
+
+  // An invoice being edited keeps its template; a new one uses the chosen template.
+  const templateKey =
+    draft.templateKey && templates.includes(draft.templateKey)
+      ? draft.templateKey
+      : templates[0];
+  const template = templateKey ? INVOICE_TEMPLATES[templateKey] : undefined;
 
   const updateDraft = <Field extends keyof InvoiceDraft>(
     field: Field,
@@ -113,10 +128,11 @@ export default function InvoicePage() {
   const saveDraft = async (values: InvoiceDraft) => {
     setSaveError("");
     try {
-      setDraft(values);
+      const withTemplate = { ...values, templateKey };
+      setDraft(withTemplate);
       const savedRecord = recordId
-        ? await updateInvoice(recordId, values)
-        : await createInvoice(values);
+        ? await updateInvoice(recordId, withTemplate)
+        : await createInvoice(withTemplate);
       setRecordId(savedRecord.id);
       window.localStorage.removeItem(INVOICE_EDIT_ID_KEY);
       setIsSaved(true);
@@ -198,60 +214,90 @@ export default function InvoicePage() {
 
       {isLockedVersion && (
         <p className={styles.lockedNotice} role="status">
-          ეს ინვოისი {openStatus === "sent" ? "გაგზავნილია" : "დაბეჭდილია"} და აღარ შეიცვლება.
-          შენახვისას შეიქმნება ახალი ვერსია.
+          ეს ინვოისი {openStatus === "sent" ? "გაგზავნილია" : "დაბეჭდილია"} და
+          აღარ შეიცვლება. შენახვისას შეიქმნება ახალი ვერსია.
         </p>
       )}
 
-      <InvoiceForm
-        key={formResetKey}
-        initialValues={draft}
-        companies={companies}
-        companiesReady={!companiesLoading && !companiesLoadError}
-        isSaved={isSaved}
-        saveError={
-          companiesLoadError
-            ? companiesLoadError instanceof Error
-              ? companiesLoadError.message
-              : "კომპანიების ჩატვირთვა ვერ მოხერხდა."
-            : invoicesLoadError
-              ? invoicesLoadError instanceof Error
-                ? invoicesLoadError.message
-                : "ინვოისების ჩატვირთვა ვერ მოხერხდა."
-              : settingsLoadError
-                ? settingsLoadError instanceof Error
-                  ? settingsLoadError.message
-                  : "ორგანიზაციის პარამეტრების ჩატვირთვა ვერ მოხერხდა."
-                : saveError
-        }
-        pdfError={pdfError}
-        pdfSaved={pdfSaved}
-        onDraftChange={updateDraft}
-        onSubmit={saveDraft}
-        onReset={resetDraft}
-        onPrint={printInvoice}
-        onExportPdf={exportPdf}
-      />
-
-      {isSaved && (
-        <section className={styles.invoicePreview} aria-label="ინვოისის გადახედვა">
-          <InvoiceDocument
-            organization={draft.title}
-            invoiceNumber={draft.invoiceNumber}
-            reportingDate={formatInvoiceDate(draft.reportingDate)}
-            sendingDate={formatInvoiceDate(draft.sendingDate)}
-            address={draft.issuerAddress}
-            identificationNumber={draft.issuerIdentificationNumber}
-            bankName={draft.bankName}
-            bankCode={draft.bankCode}
-            bankAccount={draft.bankAccount}
-            companyName={draft.issuerName}
-            reportingMonth={formatGeorgianMonthYear(draft.reportingMonth)}
-            serviceDescription={draft.reportingDescription}
-            amount={draft.amount}
-            amountInWords={draft.amountInWords}
+      {account && !template ? (
+        <p className={styles.lockedNotice} role="status">
+          თქვენი ინვოისის ფორმა ჯერ არ არის მზად. გაგვიგზავნეთ თქვენი ინვოისის
+          ნიმუში <Link to="/forms">ფორმების გვერდიდან</Link>. ფორმა აქ
+          გამოჩნდება, როცა მას ავაწყობთ და დაადასტურებთ.
+        </p>
+      ) : !template ? null : (
+        <>
+          {templates.length > 1 && (
+            <label className={styles.templatePicker}>
+              ინვოისის ფორმა
+              <select
+                value={templateKey}
+                onChange={(event) =>
+                  updateDraft("templateKey", event.target.value)
+                }
+              >
+                {templates.map((key) => (
+                  <option key={key} value={key}>
+                    {INVOICE_TEMPLATES[key].title}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <template.form
+            key={formResetKey}
+            initialValues={draft}
+            companies={companies}
+            companiesReady={!companiesLoading && !companiesLoadError}
+            isSaved={isSaved}
+            saveError={
+              companiesLoadError
+                ? companiesLoadError instanceof Error
+                  ? companiesLoadError.message
+                  : "კომპანიების ჩატვირთვა ვერ მოხერხდა."
+                : invoicesLoadError
+                  ? invoicesLoadError instanceof Error
+                    ? invoicesLoadError.message
+                    : "ინვოისების ჩატვირთვა ვერ მოხერხდა."
+                  : settingsLoadError
+                    ? settingsLoadError instanceof Error
+                      ? settingsLoadError.message
+                      : "ორგანიზაციის პარამეტრების ჩატვირთვა ვერ მოხერხდა."
+                    : saveError
+            }
+            pdfError={pdfError}
+            pdfSaved={pdfSaved}
+            onDraftChange={updateDraft}
+            onSubmit={saveDraft}
+            onReset={resetDraft}
+            onPrint={printInvoice}
+            onExportPdf={exportPdf}
           />
-        </section>
+
+          {isSaved && (
+            <section
+              className={styles.invoicePreview}
+              aria-label="ინვოისის გადახედვა"
+            >
+              <template.document
+                organization={draft.title}
+                invoiceNumber={draft.invoiceNumber}
+                reportingDate={formatInvoiceDate(draft.reportingDate)}
+                sendingDate={formatInvoiceDate(draft.sendingDate)}
+                address={draft.issuerAddress}
+                identificationNumber={draft.issuerIdentificationNumber}
+                bankName={draft.bankName}
+                bankCode={draft.bankCode}
+                bankAccount={draft.bankAccount}
+                companyName={draft.issuerName}
+                reportingMonth={formatGeorgianMonthYear(draft.reportingMonth)}
+                serviceDescription={draft.reportingDescription}
+                amount={draft.amount}
+                amountInWords={draft.amountInWords}
+              />
+            </section>
+          )}
+        </>
       )}
     </div>
   );

@@ -1,0 +1,29 @@
+@use "abstracts/colors" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/typography" as *;
+
+.upload {
+  display: grid;
+  justify-items: start;
+  gap: $space-2;
+  margin-bottom: $space-4;
+}
+
+.hint,
+.ok,
+.error {
+  margin: 0;
+  font-size: $text-xs;
+}
+
+.hint {
+  color: $color-text-muted;
+}
+
+.ok {
+  color: $color-success;
+}
+
+.error {
+  color: $color-danger;
+}

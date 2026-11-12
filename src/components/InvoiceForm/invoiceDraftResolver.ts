@@ -40,7 +40,7 @@ export const invoiceDraftResolver: Resolver<InvoiceDraft, InvoiceDraftContext> =
 
   for (const [field, message] of Object.entries(requiredFields)) {
     const key = field as keyof InvoiceDraft;
-    if (!values[key].trim()) setError(key, message);
+    if (!values[key]?.trim()) setError(key, message);
   }
 
   if (

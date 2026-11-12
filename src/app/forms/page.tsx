@@ -1,25 +1,38 @@
-import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronRight, FileText } from "lucide-react";
+import { ChevronRight, FileText, Paperclip } from "lucide-react";
 import { Card } from "@/components/Card/Card";
+import { FileReview } from "@/components/FileReview/FileReview";
+import { FormStatusBadge } from "@/components/FormStatusBadge/FormStatusBadge";
+import { SampleUpload } from "@/components/SampleUpload/SampleUpload";
 import { TemplatePreview } from "@/components/TemplatePreview/TemplatePreview";
-import { InvoiceFormList } from "@/components/InvoiceFormList/InvoiceFormList";
-import { invoiceFormsApi } from "@/api/invoiceForms";
 import { useAccount } from "@/hooks/api/useAccount";
 import { useInvoiceForms } from "@/hooks/api/useInvoiceForms";
 import { INVOICE_TEMPLATES, templatesFor } from "@/invoiceTemplates/registry";
 import styles from "./page.module.scss";
 
 export default function FormsPage() {
-  const { templateKey } = useParams();
+  const { templateKey, fileId } = useParams();
   const { data: account, error: accountError } = useAccount();
-  const templates = templatesFor(account?.invoiceTemplates);
-  const selected =
-    templateKey && templates.includes(templateKey) ? templateKey : undefined;
   const { data: forms, error: loadError } = useInvoiceForms();
-  const [error, setError] = useState("");
-  const message =
-    error || (loadError ? "ფაილების ჩატვირთვა ვერ მოხერხდა." : "");
+  const templates = templatesFor(account?.invoiceTemplates);
+  const selectedTemplate =
+    templateKey && templates.includes(templateKey) ? templateKey : undefined;
+  const selectedFile = fileId
+    ? forms?.find((form) => form.id === fileId)
+    : undefined;
+
+  let preview;
+  if (selectedTemplate)
+    preview = <TemplatePreview templateKey={selectedTemplate} />;
+  else if (selectedFile) preview = <FileReview form={selectedFile} />;
+  else {
+    const missing = (templateKey && account) || (fileId && forms);
+    preview = (
+      <p className={styles.previewHint}>
+        {missing ? "ფორმა ვერ მოიძებნა." : "აირჩიეთ ფორმა სიიდან."}
+      </p>
+    );
+  }
 
   return (
     <main className={styles.page}>
@@ -46,7 +59,9 @@ export default function FormsPage() {
                     <Link
                       className={styles.template}
                       to={`/forms/${key}`}
-                      aria-current={key === selected ? "page" : undefined}
+                      aria-current={
+                        key === selectedTemplate ? "page" : undefined
+                      }
                     >
                       <FileText
                         size={20}
@@ -69,38 +84,51 @@ export default function FormsPage() {
           </Card>
 
           <Card
-            heading="ატვირთული ფაილები"
-            description="Billo-ს მიერ თქვენთვის ატვირთული ფაილები."
+            heading="ჩემი ნიმუშები"
+            description="გამოგვიგზავნეთ ინვოისი, რომელსაც დღეს იყენებთ. მის მიხედვით ავაწყობთ თქვენს ფორმას."
           >
-            {message && (
+            <SampleUpload />
+            {loadError ? (
               <p className={styles.error} role="alert">
-                {message}
+                ფაილების ჩატვირთვა ვერ მოხერხდა.
               </p>
-            )}
-            {!forms && !loadError ? (
+            ) : !forms ? (
               <p className={styles.loading} role="status">
                 ფაილები იტვირთება…
               </p>
+            ) : forms.length === 0 ? (
+              <p className={styles.loading}>ნიმუში ჯერ არ გაგიგზავნიათ.</p>
             ) : (
-              <InvoiceFormList
-                forms={forms ?? []}
-                download={(form) => invoiceFormsApi.download(form.id)}
-                onError={setError}
-              />
+              <ul className={styles.templates}>
+                {forms.map((form) => (
+                  <li key={form.id}>
+                    <Link
+                      className={`${styles.template} ${styles.file}`}
+                      to={`/forms/file/${form.id}`}
+                      aria-current={form.id === fileId ? "page" : undefined}
+                    >
+                      <Paperclip
+                        size={20}
+                        aria-hidden
+                        className={styles.templateIcon}
+                      />
+                      <span
+                        className={styles.templateName}
+                        title={form.fileName}
+                      >
+                        {form.fileName}
+                      </span>
+                      <FormStatusBadge status={form.status} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             )}
           </Card>
         </div>
 
         <section className={styles.preview} aria-label="ფორმის გადახედვა">
-          {selected ? (
-            <TemplatePreview templateKey={selected} />
-          ) : (
-            <p className={styles.previewHint}>
-              {templateKey && account
-                ? "ფორმა ვერ მოიძებნა."
-                : "აირჩიეთ ფორმა სიიდან."}
-            </p>
-          )}
+          {preview}
         </section>
       </div>
     </main>

@@ -8,7 +8,7 @@ export function TemplatePreview({ templateKey }: { templateKey: string }) {
   if (!template) return null;
 
   const issuer = issuers?.find((item) => item.isPrimary) ?? issuers?.[0];
-  const Template = template.component;
+  const Template = template.document;
   return (
     <Template
       organization={issuer?.title ?? ""}

@@ -13,6 +13,8 @@ export interface InvoiceDraft {
   bankAccount: string;
   bankName: string;
   bankCode: string;
+  // Which organization template made this invoice. Old invoices have none (= "tatishvili").
+  templateKey?: string;
 }
 
 export interface OrganizationSettings {

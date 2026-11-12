@@ -128,3 +128,7 @@
   border-color: $color-primary;
   background: $surface-hover;
 }
+
+.file {
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+}
