@@ -1,6 +1,6 @@
 {
   "name": "billo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -57,10 +57,37 @@
     ],
     "mac": {
       "icon": "public/icon.icns",
+      "category": "public.app-category.finance",
       "target": [
-        "dmg"
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
       ],
-      "category": "public.app-category.finance"
+      "artifactName": "Billo-${version}-macOS-${arch}.${ext}"
+    },
+    "dmg": {
+      "writeUpdateInfo": false
+    },
+    "win": {
+      "icon": "public/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Billo-${version}-Windows-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "differentialPackage": false
     }
   }
 }

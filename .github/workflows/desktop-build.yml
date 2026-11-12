@@ -17,8 +17,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # One macOS runner builds both Apple Silicon (arm64) and Intel (x64).
           - platform: macOS
             os: macos-latest
+          - platform: Windows
+            os: windows-latest
 
     steps:
       - name: Check out source
@@ -42,8 +45,41 @@ jobs:
       - name: Build desktop installer
         run: npm run electron:build
 
-      - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: billo-${{ matrix.platform }}
+          path: |
+            release/*.dmg
+            release/*.exe
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+
+      # Only three files go into the release: one per platform.
+      - name: Rename installers
+        working-directory: installers
+        run: |
+          mv Billo-*-macOS-arm64.dmg "Billo-${GITHUB_REF_NAME}-macOS-Apple-Silicon.dmg"
+          mv Billo-*-macOS-x64.dmg   "Billo-${GITHUB_REF_NAME}-macOS-Intel.dmg"
+          mv Billo-*-Windows-Setup.exe "Billo-${GITHUB_REF_NAME}-Windows-Setup.exe"
+          ls -la
+
+      - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" release/*.dmg release/*.blockmap release/*.yml --title "${{ github.ref_name }}" --generate-notes
+        run: |
+          gh release create "$GITHUB_REF_NAME" installers/*.dmg installers/*.exe \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Billo $GITHUB_REF_NAME" \
+            --generate-notes
