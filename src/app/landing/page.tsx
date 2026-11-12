@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AboutPanel } from "@/components/Landing/AboutPanel";
+import { ContactsPanel } from "@/components/Landing/ContactsPanel";
 import { LandingNav, type LandingPanel } from "@/components/Landing/LandingNav";
 import { AccountPreview, HistoryPreview, LoginPreview } from "@/components/Landing/PreviewCards";
 import cards from "@/components/Landing/Landing.module.scss";
@@ -9,9 +10,9 @@ import { Modal } from "@/ui/Modal/Modal";
 import { Starfield } from "@/ui/Starfield/Starfield";
 import styles from "./page.module.scss";
 
-const PANELS: Record<LandingPanel, { title: string; text?: string[] }> = {
-  about: { title: "პროექტის შესახებ" },
-  contacts: { title: "კონტაქტები", text: ["ტექსტი მალე დაემატება."] },
+const PANELS: Record<LandingPanel, { title: string; description: string }> = {
+  about: { title: "პროექტის შესახებ", description: "Billo — ინვოისები მარტივად" },
+  contacts: { title: "კონტაქტები", description: "თამარ ხუსკივაძე — Billo-ს ავტორი" },
 };
 
 export default function LandingPage() {
@@ -45,17 +46,13 @@ export default function LandingPage() {
       {panel && (
         <Modal
           title={PANELS[panel].title}
-          description={panel === "about" ? "Billo — ინვოისები მარტივად" : undefined}
+          description={PANELS[panel].description}
           icon={panel === "about" ? <img src="/logo-symbol.svg" alt="" width={28} height={28} /> : undefined}
           size={panel === "about" ? "lg" : "md"}
           backdrop="dim"
           onClose={() => setPanel(null)}
         >
-          {panel === "about" ? (
-            <AboutPanel />
-          ) : (
-            PANELS[panel].text?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)
-          )}
+          {panel === "about" ? <AboutPanel /> : <ContactsPanel />}
         </Modal>
       )}
     </div>

@@ -1,0 +1,78 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.contacts {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.lead {
+  margin: 0;
+  color: $color-text;
+  font-size: $text-md;
+  line-height: $leading-normal;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  padding: $space-3 $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $surface-hover;
+  color: inherit;
+  text-decoration: none;
+  @include transition(border-color);
+
+  &:hover {
+    border-color: $color-border-strong;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.icon {
+  @include center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  background: color-mix(in srgb, $color-primary 18%, transparent);
+  color: $color-primary;
+}
+
+.text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.label {
+  color: $color-text-muted;
+  font-size: $text-xs;
+}
+
+.value {
+  overflow-wrap: anywhere;
+  color: $color-text-strong;
+  font-size: $text-md;
+  font-weight: $weight-medium;
+}
