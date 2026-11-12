@@ -1,5 +1,32 @@
 # Billo
 
+Billo is an app for creating and tracking invoices. It runs in the browser
+and as a desktop app for macOS and Windows.
+
+The API is here: [TamarCoder/Billo--Backend](https://github.com/TamarCoder/Billo--Backend).
+
+<!-- TODO: add 2–3 screenshots or a GIF here, and a live demo link. -->
+
+## The problem
+
+<!-- TODO: write your own story here, in 3–5 sentences.
+     What did you do by hand before? What went wrong? Why did you build Billo? -->
+
+## Features
+
+- Register, log in, reset password
+- Manage issuers and client companies
+- Invoice templates (forms)
+- Create invoices and see the invoice history
+- Desktop app built with Electron, with automatic builds in GitHub Actions
+
+## Tech stack
+
+- **React 19** + **TypeScript**, built with **Vite**
+- **Sass** for styles
+- **Electron** for the desktop app
+- **GitHub Actions** for macOS and Windows builds
+
 ## Local development
 
 Install dependencies and start the frontend:
@@ -50,3 +77,7 @@ by Vite. Sass can load shared files from `src/styles` at any depth:
 ```scss
 @use "variables" as *;
 ```
+
+## License
+
+[MIT](LICENSE)

@@ -1,0 +1,110 @@
+@use "abstracts/colors" as *;
+@use "abstracts/mixins" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/spacing" as *;
+@use "abstracts/surfaces" as *;
+@use "abstracts/typography" as *;
+
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.lead {
+  margin: 0;
+  color: $color-text;
+  font-size: $text-md;
+  line-height: $leading-normal;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  padding: $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $surface-hover;
+  color: $color-text-muted;
+  font-size: $text-sm;
+  line-height: $leading-snug;
+
+  strong {
+    color: $color-text-strong;
+    font-size: $text-md;
+    font-weight: $weight-semibold;
+  }
+}
+
+.featureIcon {
+  @include center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: $space-2;
+  border-radius: $radius-md;
+  background: color-mix(in srgb, $color-primary 18%, transparent);
+  color: $color-primary;
+}
+
+.openSource {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  padding-top: $space-4;
+  border-top: 1px solid $color-border;
+  color: $color-text-muted;
+  font-size: $text-sm;
+  line-height: $leading-normal;
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    color: $color-text-strong;
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.github {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-pill;
+  color: $color-text-strong;
+  font-weight: $weight-medium;
+  text-decoration: none;
+  @include transition(background);
+
+  &:hover {
+    background: $surface-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
