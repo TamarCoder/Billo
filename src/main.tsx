@@ -18,6 +18,9 @@ import LandingPage from "@/app/landing/page";
 import { getSessionToken } from "@/lib/session";
 import "@/app/globals.scss";
 
+// "web" in the browser, "desktop" in Electron. Lets styles differ per platform.
+document.documentElement.dataset.platform = "electron" in window ? "desktop" : "web";
+
 function RootRedirect() {
   return getSessionToken() ? <Navigate to="/home" replace /> : <LandingPage />;
 }
