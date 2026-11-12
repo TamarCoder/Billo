@@ -1,4 +1,6 @@
 @use "abstracts/colors" as *;
+@use "abstracts/radius" as *;
+@use "abstracts/surfaces" as *;
 @use "abstracts/spacing" as *;
 @use "abstracts/typography" as *;
 
@@ -30,4 +32,61 @@
 
 .error {
   color: $color-danger;
+}
+
+.templates {
+  display: grid;
+  gap: $space-3;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.template {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: $space-3;
+  min-height: 56px;
+  padding: $space-3 $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: $surface-glass;
+  color: $color-text-strong;
+  text-decoration: none;
+
+  &:hover {
+    border-color: $color-border-strong;
+    background: $surface-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-focus-ring;
+    outline-offset: 2px;
+  }
+}
+
+.templateIcon {
+  color: $color-primary;
+}
+
+.templateName {
+  overflow: hidden;
+  font-size: $text-md;
+  font-weight: $weight-medium;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.templateArrow {
+  color: $color-text-muted;
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-text-strong;
+  }
 }

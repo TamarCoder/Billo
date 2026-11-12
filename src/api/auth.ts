@@ -6,6 +6,8 @@ export interface OrganizationAccount {
   identificationCode: string;
   email: string;
   role?: "organization" | "admin";
+  // Keys of coded invoice templates for this organization. Empty = standard template.
+  invoiceTemplates?: string[];
 }
 
 export interface LoginResponse {
